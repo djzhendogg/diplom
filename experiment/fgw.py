@@ -11,93 +11,58 @@ class FusedGromovWassersteinComputer:
     def __init__(self):
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-    def prepare_structures(self, X, structure_type='grid', **kwargs):
+    def prepare_structures(self, X, structure_type='euclidean', **kwargs):
         """
         Создает структурные матрицы (C) для Gromov-Wasserstein
 
         Args:
-            X: входные данные (n_samples, 46, 100)
-            structure_type: тип структуры ('grid', 'euclidean', 'correlation')
+            X: входные данные (n_samples, m)
+            structure_type: тип структуры ('braycurtis', 'canberra', 'chebyshev', 'cityblock', 'correlation', 'cosine', 'dice', 
+            'euclidean', 'hamming', 'jaccard', 'kulczynski1', 'mahalanobis', 'matching', 'minkowski', 'rogerstanimoto', 'russellrao', 
+            'seuclidean', 'sokalmichener', 'sokalsneath', 'sqeuclidean', 'wminkowski', 'yule')
 
         Returns:
             C: структурная матрица (n_samples, n_samples) или список матриц
         """
+        # Вычисляем попарные расстояния между образцами
+        # Используем субдискретизацию для уменьшения размера
         n_samples = X.shape[0]
-        if structure_type == 'grid':
+        if n_samples > 5000:
+            # Для больших данных используем batch processing
+            C = np.zeros((n_samples, n_samples))
+            batch_size = 1000
+            for i in range(0, n_samples, batch_size):
+                end_i = min(i + batch_size, n_samples)
+                for j in range(0, n_samples, batch_size):
+                    end_j = min(j + batch_size, n_samples)
+                    # Вычисляем расстояния для батча
+                    batch_dist = ot.dist(
+                        X[i:end_i],
+                        X[j:end_j],
+                        metric=structure_type
+                    )
+                    C[i:end_i, j:end_j] = batch_dist
+        else:
+            C = ot.dist(X, X, metric=structure_type)
 
-            # Вычисляем попарные расстояния между образцами
-            # Используем субдискретизацию для уменьшения размера
-            if n_samples > 5000:
-                # Для больших данных используем batch processing
-                C = np.zeros((n_samples, n_samples))
-                batch_size = 1000
-                for i in range(0, n_samples, batch_size):
-                    end_i = min(i + batch_size, n_samples)
-                    for j in range(0, n_samples, batch_size):
-                        end_j = min(j + batch_size, n_samples)
-                        # Вычисляем расстояния для батча
-                        batch_dist = ot.dist(
-                            X[i:end_i],
-                            X[j:end_j],
-                            metric='euclidean'
-                        )
-                        C[i:end_i, j:end_j] = batch_dist
-            else:
-                C = ot.dist(X, X, metric='euclidean')
-
-            C /= C.max()
-            return C
-
-        elif structure_type == 'euclidean':
-            # Структура на основе евклидовых расстояний между выпрямленными векторами
-            X_flat = X.reshape(n_samples, -1)
-            C = ot.dist(X_flat, X_flat, metric='euclidean')
-            C /= C.max()
-            return C
-
-        elif structure_type == 'correlation':
-            # Структура на основе корреляций между признаками
-            X_flat = X.reshape(n_samples, -1)
-            corr = np.corrcoef(X_flat)
-            # Преобразуем корреляцию в расстояние
-            C = 1 - np.abs(corr)
-            np.fill_diagonal(C, 0)
-            return C
-
-        elif structure_type == 'individual':
-            # Индивидуальная структура для каждого объекта
-            # (например, попарные расстояния между точками внутри каждой матрицы)
-            C_list = []
-            X_flat = X.reshape(n_samples, 46 * 100)
-
-            for i in range(n_samples):
-                # Восстанавливаем матрицу 46x100
-                matrix = X_flat[i].reshape(46, 100)
-                # Создаем структуру на основе градиентов или локальных патчей
-                grad_x = np.gradient(matrix, axis=0)
-                grad_y = np.gradient(matrix, axis=1)
-                structure = np.sqrt(grad_x ** 2 + grad_y ** 2).ravel()
-                # Попарные расстояния между "структурными признаками"
-                C_i = ot.dist(structure.reshape(-1, 1), structure.reshape(-1, 1))
-                C_list.append(C_i / C_i.max())
-
-            return C_list
-        return None
+        C /= C.max()
+        return C
 
     def compute_fgw_distance(self, X0, X1, alpha=0.5, reg=0.01,
-                             structure_type='grid', loss_fun='square_loss',
-                             structure0=None, structure1=None,
+                             structure_type='euclidean', loss_fun='square_loss',
                              max_iter=100, tol=1e-6, verbose=True):
         """
         Вычисляет Fused Gromov-Wasserstein расстояние между двумя наборами матриц
 
         Args:
-            X0, X1: данные формы (n_samples, 46, 100)
+            X0, X1: данные формы (n_samples, m)
             alpha: баланс между признаками (1-alpha для структуры, alpha для признаков)
                    alpha=0: только структура (GW)
                    alpha=1: только признаки (OT)
             reg: энтропийная регуляризация
-            structure_type: тип структуры ('grid', 'euclidean', 'correlation', 'individual')
+            structure_type: тип структуры ('braycurtis', 'canberra', 'chebyshev', 'cityblock', 'correlation', 'cosine', 'dice', 
+            'euclidean', 'hamming', 'jaccard', 'kulczynski1', 'mahalanobis', 'matching', 'minkowski', 'rogerstanimoto', 'russellrao', 
+            'seuclidean', 'sokalmichener', 'sokalsneath', 'sqeuclidean', 'wminkowski', 'yule')
             loss_fun: функция потерь для GW ('square_loss', 'kl_loss')
             structure0, structure1: предвычисленные структуры (если есть)
         """
@@ -111,26 +76,8 @@ class FusedGromovWassersteinComputer:
         q = np.ones(n1) / n1
 
         # Получаем структурные матрицы
-        if structure0 is None:
-            if structure_type == 'individual':
-                C0 = self.prepare_structures(X0, structure_type)
-                C1 = self.prepare_structures(X1, structure_type)
-                # Для individual нужно усреднить или использовать список
-                C0 = np.mean(C0, axis=0) if isinstance(C0, list) else C0
-                C1 = np.mean(C1, axis=0) if isinstance(C1, list) else C1
-            else:
-                C0 = self.prepare_structures(X0, structure_type)
-                C1 = self.prepare_structures(X1, structure_type)
-        else:
-            C0, C1 = structure0, structure1
-
-        # Убеждаемся, что C0 и C1 - матрицы правильной формы
-        if len(C0.shape) == 2 and C0.shape[0] == n0:
-            pass  # уже правильно
-        else:
-            # Если C0 - общая структура для всех объектов
-            C0 = np.tile(C0, (n0, 1))[:n0, :n0] if C0.shape[0] != n0 else C0
-            C1 = np.tile(C1, (n1, 1))[:n1, :n1] if C1.shape[0] != n1 else C1
+        C0 = self.prepare_structures(X0, structure_type)
+        C1 = self.prepare_structures(X1, structure_type)
 
         # Вычисляем Fused Gromov-Wasserstein
         try:
@@ -171,7 +118,7 @@ class FusedGromovWassersteinComputer:
 
         return fgw_dist, T, log
 
-    def compute_fgw_with_structure_search(self, X0, X1, structure_types=['grid', 'euclidean', 'correlation'],
+    def compute_fgw_with_structure_search(self, X0, X1, structure_types=['euclidean', 'sqeuclidean'],
                                           alphas=[0.0, 0.3, 0.5, 0.7, 1.0]):
         """
         Сравнивает FGW расстояние для разных типов структуры и alpha

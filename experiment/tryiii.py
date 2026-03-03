@@ -21,7 +21,6 @@ fgw_computer = FusedGromovWassersteinComputer()
 dist_fgw, T, log = fgw_computer.compute_fgw_distance(
     X0, X1,
     alpha=0.5,  # Равный вес признаков и структуры
-    structure_type='grid',
     loss_fun='square_loss',
     verbose=True
 )
