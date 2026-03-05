@@ -4,11 +4,11 @@ from fastdtw import fastdtw
 
 
 def fastdtw_dist(x, y, verbose=False):
-    distance, path = fastdtw(x, y, dist=euclidean)
+    distance, _ = fastdtw(x, y, dist=euclidean)
     if verbose:
         print(f"Расстояние dtw: {distance}")
-    # print(f"Путь: {path}")
-    # print(f"Длина пути: {len(path)}")
+        # print(f"Путь: {path}")
+        # print(f"Длина пути: {len(path)}")
     return distance
 
 
@@ -28,7 +28,7 @@ def classic_euclid(x, y, vector_len=46, verbose=False):
     return distance
 
 
-def masked_length_awareded(x, y, verbose=False):
+def masked_length_awarded(x, y, verbose=False):
     if len(x) != len(y):
         min_len = min(len(x), len(y))
         max_len = max(len(x), len(y))

@@ -3,154 +3,157 @@ import numpy as np
 import torch
 import matplotlib.pyplot as plt
 
+from experiment.distances import dist_pairwise_matrix, fastdtw_dist, masked_length_awarded, dist_matrix
+
+
 class FusedGromovWassersteinComputer:
     """
     Класс для вычисления Fused Gromov-Wasserstein расстояния между наборами матриц
     """
-
-    def __init__(self):
-        self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
-
-    def prepare_structures(self, X, structure_type='euclidean', **kwargs):
+    @staticmethod
+    def prepare_structures(x, structure_metric='dtw'):
         """
         Создает структурные матрицы (C) для Gromov-Wasserstein
 
         Args:
-            X: входные данные (n_samples, m)
-            structure_type: тип структуры ('braycurtis', 'canberra', 'chebyshev', 'cityblock', 'correlation', 'cosine', 'dice', 
-            'euclidean', 'hamming', 'jaccard', 'kulczynski1', 'mahalanobis', 'matching', 'minkowski', 'rogerstanimoto', 'russellrao', 
-            'seuclidean', 'sokalmichener', 'sokalsneath', 'sqeuclidean', 'wminkowski', 'yule')
+            x: входные данные (n_samples, m)
+            structure_metric: тип структуры (masked_length_awarded, dtw)
 
         Returns:
             C: структурная матрица (n_samples, n_samples) или список матриц
         """
         # Вычисляем попарные расстояния между образцами
         # Используем субдискретизацию для уменьшения размера
-        n_samples = X.shape[0]
-        if n_samples > 5000:
-            # Для больших данных используем batch processing
-            C = np.zeros((n_samples, n_samples))
-            batch_size = 1000
-            for i in range(0, n_samples, batch_size):
-                end_i = min(i + batch_size, n_samples)
-                for j in range(0, n_samples, batch_size):
-                    end_j = min(j + batch_size, n_samples)
-                    # Вычисляем расстояния для батча
-                    batch_dist = ot.dist(
-                        X[i:end_i],
-                        X[j:end_j],
-                        metric=structure_type
-                    )
-                    C[i:end_i, j:end_j] = batch_dist
-        else:
-            C = ot.dist(X, X, metric=structure_type)
+        c = None
+        if structure_metric == 'dtw':
+            c = dist_pairwise_matrix(x, fastdtw_dist)
+        elif structure_metric == 'masked_length_awarded':
+            c = dist_pairwise_matrix(x, masked_length_awarded)
+        return c
 
-        C /= C.max()
-        return C
+    @staticmethod
+    def prepare_feature_matrix(x, y, feature_metric='dtw'):
+        """
+        Создает фичи матрицы (M) для Gromov-Wasserstein
+        """
+        # Вычисляем попарные расстояния между образцами
+        # Используем субдискретизацию для уменьшения размера
+        m = None
+        if feature_metric == 'dtw':
+            m = dist_matrix(x, y, fastdtw_dist)
+        elif feature_metric == 'masked_length_awarded':
+            m = dist_matrix(x, y, masked_length_awarded)
+        return m
 
-    def compute_fgw_distance(self, X0, X1, alpha=0.5, reg=0.01,
-                             structure_type='euclidean', loss_fun='square_loss',
-                             max_iter=100, tol=1e-6, verbose=True):
+    def compute_fgw_distance(self, x_0, x_1,
+                             structure_metric='dtw',
+                             feature_metric='masked_length_awarded',
+                             loss_fun='square_loss',
+                             precomputed_c_0 = None,
+                             precomputed_c_1 = None,
+                             alpha=0.5, count_plan=False, verbose=False):
         """
         Вычисляет Fused Gromov-Wasserstein расстояние между двумя наборами матриц
 
         Args:
-            X0, X1: данные формы (n_samples, m)
+            x_0:
+            x_1:
+            structure_metric: тип дистанции структурной матрицы (masked_length_awarded, dtw)
+            feature_metric: тип дистанции признаковой матрицы (masked_length_awarded, dtw)
+            loss_fun: функция потерь для GW ('square_loss', 'kl_loss')
             alpha: баланс между признаками (1-alpha для структуры, alpha для признаков)
                    alpha=0: только структура (GW)
                    alpha=1: только признаки (OT)
-            reg: энтропийная регуляризация
-            structure_type: тип структуры ('braycurtis', 'canberra', 'chebyshev', 'cityblock', 'correlation', 'cosine', 'dice', 
-            'euclidean', 'hamming', 'jaccard', 'kulczynski1', 'mahalanobis', 'matching', 'minkowski', 'rogerstanimoto', 'russellrao', 
-            'seuclidean', 'sokalmichener', 'sokalsneath', 'sqeuclidean', 'wminkowski', 'yule')
-            loss_fun: функция потерь для GW ('square_loss', 'kl_loss')
-            structure0, structure1: предвычисленные структуры (если есть)
+            count_plan:  расчитать ли план
+            verbose: print log
+            precomputed_c_0: вычисленные с_0
+            precomputed_c_1: вычисленные с_1
         """
         # Матрица признаковых расстояний (для Fused term)
-        M = ot.dist(X0, X1, metric='sqeuclidean')
-        M /= M.max()
+        log = {}
+        m = self.prepare_feature_matrix(x_0, x_1, feature_metric)
+        log['M'] = m
 
         # Веса объектов (равномерные)
-        n0, n1 = len(X0), len(X1)
+        n0, n1 = len(x_0), len(x_1)
         p = np.ones(n0) / n0
         q = np.ones(n1) / n1
 
         # Получаем структурные матрицы
-        C0 = self.prepare_structures(X0, structure_type)
-        C1 = self.prepare_structures(X1, structure_type)
+        if not precomputed_c_0:
+            c_0 = self.prepare_structures(x_0, structure_metric)
+        else:
+            c_0 = precomputed_c_0
 
+        if not precomputed_c_1:
+            c_1 = self.prepare_structures(x_1, structure_metric)
+        else:
+            c_1 = precomputed_c_1
+        log['C0'] = c_0
+        log['C1'] = c_1
         # Вычисляем Fused Gromov-Wasserstein
-        try:
-            # Пробуем сначала с энтропийной регуляризацией (быстрее)
-            T, log = ot.fused_gromov_wasserstein(
-                M, C0, C1, p, q,
+        if count_plan:
+            t_plan, plan_log = ot.fused_gromov_wasserstein(
+                m, c_0, c_1, p, q,
                 loss_fun=loss_fun,
                 alpha=alpha,
                 log=True,
-                verbose=verbose
+                max_iter=100000
             )
+            log['T'] = t_plan
+            log['plan_log'] = plan_log
 
-            # Вычисляем расстояние
-            fgw_dist = ot.fused_gromov_wasserstein2(
-                M, C0, C1, p, q,
-                loss_fun=loss_fun,
-                alpha=alpha,
-                log=False
-            )
-
-        except:
-            # Если не получилось, используем регуляризованную версию
-            T, log = ot.fused_gromov_wasserstein(
-                M, C0, C1, p, q,
-                loss_fun=loss_fun,
-                alpha=alpha,
-                log=True,
-                verbose=verbose,
-                epsilon=reg,
-                max_iter=max_iter,
-                tol=tol
-            )
-
-            fgw_dist = log['fgw_dist']
+        # Вычисляем расстояние
+        fgw_dist = ot.fused_gromov_wasserstein2(
+            m, c_0, c_1, p, q,
+            loss_fun=loss_fun,
+            alpha=alpha,
+            log=False,
+            max_iter=100000
+        )
 
         if verbose:
             print(f"FGW расстояние (alpha={alpha}): {fgw_dist:.4f}")
 
-        return fgw_dist, T, log
+        return fgw_dist, log
 
-    def compute_fgw_with_structure_search(self, X0, X1, structure_types=['euclidean', 'sqeuclidean'],
-                                          alphas=[0.0, 0.3, 0.5, 0.7, 1.0]):
+    def compute_fgw_with_structure_search(self, x_0, x_1, structure_metrics=None,
+                                          alphas=None):
         """
         Сравнивает FGW расстояние для разных типов структуры и alpha
         """
+        if alphas is None:
+            alphas = [0.0, 0.3, 0.5, 0.7, 1.0]
+        if structure_metrics is None:
+            structure_metrics = ['masked_length_awarded', 'dtw']
         results = {}
 
-        for struct_type in structure_types:
+        for struct_type in structure_metrics:
             results[struct_type] = {}
             print(f"\n=== Структура: {struct_type} ===")
 
             # Предвычисляем структуры для этого типа
-            C0 = self.prepare_structures(X0, struct_type)
-            C1 = self.prepare_structures(X1, struct_type)
+            pre_c_0 = self.prepare_structures(x_0, struct_type)
+            pre_c_1 = self.prepare_structures(x_1, struct_type)
 
             for alpha in alphas:
-                dist, _, _ = self.compute_fgw_distance(
-                    X0, X1,
+                dist, _ = self.compute_fgw_distance(
+                    x_0, x_1,
                     alpha=alpha,
-                    structure_type=struct_type,
-                    structure0=C0,
-                    structure1=C1,
-                    verbose=False
+                    structure_metric=struct_type,
+                    precomputed_c_0=pre_c_0,
+                    precomputed_c_1=pre_c_1
                 )
                 results[struct_type][alpha] = dist
                 print(f"  alpha={alpha:.1f}: {dist:.4f}")
 
         # Визуализация
-        self._plot_fgw_results(results, structure_types, alphas)
+        self._plot_fgw_results(results, structure_metrics, alphas)
 
         return results
 
-    def _plot_fgw_results(self, results, structure_types, alphas):
+    @staticmethod
+    def _plot_fgw_results(results, structure_types, alphas):
         """Визуализация результатов FGW"""
         plt.figure(figsize=(12, 5))
 
@@ -168,10 +171,10 @@ class FusedGromovWassersteinComputer:
 
         # Тепловая карта
         plt.subplot(1, 2, 2)
-        dist_matrix = np.array([[results[st][alpha] for alpha in alphas]
+        distances_matrix = np.array([[results[st][alpha] for alpha in alphas]
                                 for st in structure_types])
 
-        im = plt.imshow(dist_matrix, aspect='auto', cmap='viridis')
+        im = plt.imshow(distances_matrix, aspect='auto', cmap='viridis')
         plt.colorbar(im, label='FGW расстояние')
         plt.xticks(range(len(alphas)), [f'{a:.1f}' for a in alphas])
         plt.yticks(range(len(structure_types)), structure_types)
