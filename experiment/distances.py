@@ -62,27 +62,27 @@ def vector_norm(x):
 
 def dist_pairwise_matrix(objects_list, func):
     n = len(objects_list)
-    dist_matrix = np.zeros((n, n))
+    distances_matrix = np.zeros((n, n))
 
     for i in range(n):
         for j in range(i + 1, n):
             distance = func(objects_list[i], objects_list[j])
 
-            dist_matrix[i, j] = distance
-            dist_matrix[j, i] = distance
+            distances_matrix[i, j] = distance
+            distances_matrix[j, i] = distance
 
-    return dist_matrix / dist_matrix.max()
+    return distances_matrix / distances_matrix.max()
 
 
 def dist_matrix(list1, list2, func):
     n = len(list1)
     m = len(list2)
 
-    dist_matrix = np.zeros((n, m))
+    distances_matrix = np.zeros((n, m))
 
     for i in range(n):
         for j in range(m):
             distance = func(list1[i], list2[j])
-            dist_matrix[i, j] = distance
+            distances_matrix[i, j] = distance
 
-    return dist_matrix / dist_matrix.max()
+    return distances_matrix / distances_matrix.max()
