@@ -1,5 +1,5 @@
-from experiment.dataloader_torch import create_dataset_from_batches
-from experiment.preset_tools_sequant import oversampling
+from experiment.support.dataloader_torch import create_dataset_from_batches
+from experiment.proba.preset_tools_sequant import oversampling
 # from otdd.pytorch.datasets import load_torchvision_data
 from otdd.pytorch.distance import DatasetDistance
 import pandas as pd
