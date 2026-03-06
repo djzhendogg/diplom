@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-descriptors = pd.read_csv('aa_descriptors_scaled.csv', index_col=0)
+descriptors = pd.read_csv('../aa_descriptors_scaled.csv', index_col=0)
 
 def seq_to_matrix(sequence: str, max_size: int):
     rows = descriptors.shape[1]
