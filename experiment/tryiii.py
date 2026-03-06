@@ -3,7 +3,7 @@ import pandas as pd
 from experiment.fgw import FusedGromovWassersteinComputer
 from experiment.preset_tools_difflen import encode_seqs
 
-df = pd.read_csv('./antibacterial.csv')
+df = pd.read_csv('antibacterial.csv')
 max_length = df['sequence'].str.len().max()
 df_0 = df[df['label'] == 0]
 df_1 = df[df['label'] == 1]

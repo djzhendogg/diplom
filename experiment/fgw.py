@@ -74,7 +74,7 @@ class FusedGromovWassersteinComputer:
         """
         # Матрица признаковых расстояний (для Fused term)
         log = {}
-        if not precomputed_m:
+        if precomputed_m is None:
             m = self.prepare_feature_matrix(x_0, x_1, feature_metric)
         else:
             m = precomputed_m
@@ -86,12 +86,12 @@ class FusedGromovWassersteinComputer:
         q = np.ones(n1) / n1
 
         # Получаем структурные матрицы
-        if not precomputed_c_0:
+        if precomputed_c_0 is None:
             c_0 = self.prepare_structures(x_0, structure_metric)
         else:
             c_0 = precomputed_c_0
 
-        if not precomputed_c_1:
+        if precomputed_c_1 is None:
             c_1 = self.prepare_structures(x_1, structure_metric)
         else:
             c_1 = precomputed_c_1
@@ -152,7 +152,7 @@ class FusedGromovWassersteinComputer:
         """
         # Матрица признаковых расстояний (для Fused term)
         log = {}
-        if not precomputed_m:
+        if precomputed_m is None:
             m = self.prepare_feature_matrix(x_0, x_1, feature_metric)
         else:
             m = precomputed_m
@@ -164,12 +164,12 @@ class FusedGromovWassersteinComputer:
         q = np.ones(n1) / n1
 
         # Получаем структурные матрицы
-        if not precomputed_c_0:
+        if precomputed_c_0 is None:
             c_0 = self.prepare_structures(x_0, structure_metric)
         else:
             c_0 = precomputed_c_0
 
-        if not precomputed_c_1:
+        if precomputed_c_1 is None:
             c_1 = self.prepare_structures(x_1, structure_metric)
         else:
             c_1 = precomputed_c_1
@@ -192,7 +192,7 @@ class FusedGromovWassersteinComputer:
 
         return fugw_dist, log
 
-    def compute_fgw_with_structure_search(self, x_0, x_1, structure_metrics=None,
+    def compute_fgw_with_search(self, x_0, x_1, structure_metrics=None,
                                           alphas=None, make_plot=False):
         """
         Сравнивает FGW расстояние для разных типов структуры и alpha
@@ -230,7 +230,7 @@ class FusedGromovWassersteinComputer:
 
         return results
 
-    def compute_fugw_with_structure_search(self, x_0, x_1,
+    def compute_fugw_with_search(self, x_0, x_1,
                                           alphas=None, reg_marginals=None):
         """
         Сравнивает FGW расстояние для разных типов структуры и alpha
@@ -250,14 +250,12 @@ class FusedGromovWassersteinComputer:
         feature_metric = 'masked_length_awarded'
         results = {}
         pre_m = self.prepare_feature_matrix(x_0, x_1, feature_metric)
-
+        pre_c_0 = self.prepare_structures(x_0, structure_metric)
+        pre_c_1 = self.prepare_structures(x_1, structure_metric)
         for alpha in alphas:
             results[str(alpha)] = {}
             print(f"\n=== alpha: {alpha} ===")
 
-            # Предвычисляем структуры для этого типа
-            pre_c_0 = self.prepare_structures(x_0, structure_metric)
-            pre_c_1 = self.prepare_structures(x_1, structure_metric)
 
             for reg_marginal in reg_marginals:
                 dist = self.compute_fugw_distance(
@@ -272,6 +270,68 @@ class FusedGromovWassersteinComputer:
                 print(f"  reg_marginal={reg_marginal:.1f}: {dist:.4f}")
 
         return results
+
+    def compute_fgw_fugw_with_search(self, x_0, x_1):
+        alphas = [0.0, 0.5, 1.0]
+        reg_marginals = [
+            # 1, (1, 0), (0, 1),
+            # 10, 100, 1000,
+            # (3000, 300),
+            (300, 3000)
+            # (1000, 500),
+            # (500, 1000),
+        ]
+
+        structure_metric = 'dtw'
+        feature_metric = 'masked_length_awarded'
+        results_fugw = {}
+        pre_m = self.prepare_feature_matrix(x_0, x_1, feature_metric)
+        pre_c_0 = self.prepare_structures(x_0, structure_metric)
+        pre_c_1 = self.prepare_structures(x_1, structure_metric)
+        for alpha in alphas:
+            results_fugw[str(alpha)] = {}
+            print(f"\n=== alpha: {alpha} ===")
+
+            for reg_marginal in reg_marginals:
+                dist, _ = self.compute_fugw_distance(
+                    x_0, x_1,
+                    alpha=alpha,
+                    reg_marginals=reg_marginal,
+                    precomputed_c_0=pre_c_0,
+                    precomputed_c_1=pre_c_1,
+                    precomputed_m=pre_m
+                )
+                results_fugw[str(alpha)][str(reg_marginal)] = dist
+                print(f"  reg_marginal={reg_marginal}: {dist:.4f}")
+
+        results_fgw = {}
+        alphas = [0.0,
+                  # 0.3, 0.5, 0.7,
+                  1.0]
+        structure_metrics = ['masked_length_awarded', 'dtw']
+        for struct_type in structure_metrics:
+            results_fgw[struct_type] = {}
+            print(f"\n=== Структура: {struct_type} ===")
+
+            # Предвычисляем структуры для этого типа
+            pre_c_0 = self.prepare_structures(x_0, struct_type)
+            pre_c_1 = self.prepare_structures(x_1, struct_type)
+
+            for alpha in alphas:
+                dist, _ = self.compute_fgw_distance(
+                    x_0, x_1,
+                    alpha=alpha,
+                    structure_metric=struct_type,
+                    precomputed_c_0=pre_c_0,
+                    precomputed_c_1=pre_c_1,
+                    precomputed_m=pre_m
+                )
+                results_fgw[struct_type][str(alpha)] = dist
+                print(f"  alpha={alpha:.1f}: {dist:.4f}")
+
+        result = {'fgw': results_fgw, 'fugw': results_fugw}
+
+        return result
 
     @staticmethod
     def _plot_fgw_results(results, structure_types, alphas):

@@ -19,7 +19,7 @@ monomer_dict = {
 batch_size = 32
 max_len = 100
 
-df = pd.read_csv('./antibacterial.csv')
+df = pd.read_csv('antibacterial.csv')
 df_0 = df[df['label'] == 0][:4991]
 df_1 = df[df['label'] == 1][:4991]
 df_1['label'] = 0
