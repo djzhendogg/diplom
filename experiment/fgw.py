@@ -4,7 +4,7 @@ import torch
 import matplotlib.pyplot as plt
 from pyexpat import features
 
-from experiment.distances import dist_pairwise_matrix, fastdtw_dist, masked_length_awarded, dist_matrix
+from distances import dist_pairwise_matrix, fastdtw_dist, masked_length_awarded, dist_matrix
 
 
 class FusedGromovWassersteinComputer:

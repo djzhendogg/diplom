@@ -2,8 +2,8 @@ import json
 import os
 import pandas as pd
 
-from experiment.fgw import FusedGromovWassersteinComputer
-from experiment.preset_tools_difflen import encode_seqs
+from fgw import FusedGromovWassersteinComputer
+from preset_tools_difflen import encode_seqs
 
 path = "./data"
 contents = os.listdir(path)
