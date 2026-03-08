@@ -18,6 +18,8 @@ for file in files:
     X0 = encode_seqs(df_0['sequence'].to_list())
     X1 = encode_seqs(df_1['sequence'].to_list())
     dist_res = fgw_computer.compute_fgw_fugw_with_search(X0, X1)
+    dist_res['len_0'] = len(X0)
+    dist_res['len_1'] = len(X1)
     result[file.split('.')[0]] = dist_res
 
 with open('result_3_example.json', 'w', encoding='utf-8') as f:

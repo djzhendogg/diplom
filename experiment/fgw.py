@@ -1,8 +1,6 @@
-import ot
-import numpy as np
-import torch
 import matplotlib.pyplot as plt
-from pyexpat import features
+import numpy as np
+import ot
 
 from experiment.distances import dist_pairwise_matrix, fastdtw_dist, masked_length_awarded, dist_matrix
 
@@ -11,6 +9,7 @@ class FusedGromovWassersteinComputer:
     """
     Класс для вычисления Fused Gromov-Wasserstein расстояния между наборами матриц
     """
+
     @staticmethod
     def prepare_structures(x, structure_metric='dtw'):
         """
@@ -50,8 +49,8 @@ class FusedGromovWassersteinComputer:
                              structure_metric='dtw',
                              feature_metric='masked_length_awarded',
                              loss_fun='square_loss',
-                             precomputed_c_0 = None,
-                             precomputed_c_1 = None,
+                             precomputed_c_0=None,
+                             precomputed_c_1=None,
                              precomputed_m=None,
                              alpha=0.5, count_plan=False, verbose=False):
         """
@@ -124,14 +123,14 @@ class FusedGromovWassersteinComputer:
         return fgw_dist, log
 
     def compute_fugw_distance(self, x_0, x_1,
-                             structure_metric='dtw',
-                             feature_metric='masked_length_awarded',
-                             loss_fun='square_loss',
-                             reg_marginals: int | tuple =10,
-                             precomputed_c_0 = None,
-                             precomputed_c_1 = None,
-                             precomputed_m=None,
-                             alpha=0.5, verbose=False):
+                              structure_metric='dtw',
+                              feature_metric='masked_length_awarded',
+                              loss_fun='square_loss',
+                              reg_marginals: int | tuple = 10,
+                              precomputed_c_0=None,
+                              precomputed_c_1=None,
+                              precomputed_m=None,
+                              alpha=0.5, verbose=False):
         """
         Вычисляет Fused Unbalanced Gromov-Wasserstein расстояние между двумя наборами матриц
 
@@ -193,7 +192,7 @@ class FusedGromovWassersteinComputer:
         return fugw_dist, log
 
     def compute_fgw_with_search(self, x_0, x_1, structure_metrics=None,
-                                          alphas=None, make_plot=False):
+                                alphas=None, make_plot=False):
         """
         Сравнивает FGW расстояние для разных типов структуры и alpha
         """
@@ -231,7 +230,7 @@ class FusedGromovWassersteinComputer:
         return results
 
     def compute_fugw_with_search(self, x_0, x_1,
-                                          alphas=None, reg_marginals=None):
+                                 alphas=None, reg_marginals=None):
         """
         Сравнивает FGW расстояние для разных типов структуры и alpha
         """
@@ -256,7 +255,6 @@ class FusedGromovWassersteinComputer:
             results[str(alpha)] = {}
             print(f"\n=== alpha: {alpha} ===")
 
-
             for reg_marginal in reg_marginals:
                 dist = self.compute_fugw_distance(
                     x_0, x_1,
@@ -274,12 +272,12 @@ class FusedGromovWassersteinComputer:
     def compute_fgw_fugw_with_search(self, x_0, x_1):
         alphas = [0.0, 0.5, 1.0]
         reg_marginals = [
-            # 1, (1, 0), (0, 1),
-            # 10, 100, 1000,
-            # (3000, 300),
-            (300, 3000)
-            # (1000, 500),
-            # (500, 1000),
+            1, (1, 0), (0, 1),
+            10, 100, 1000,
+            (3000, 300),
+            (300, 3000),
+            (1000, 500),
+            (500, 1000),
         ]
 
         structure_metric = 'dtw'
@@ -306,7 +304,7 @@ class FusedGromovWassersteinComputer:
 
         results_fgw = {}
         alphas = [0.0,
-                  # 0.3, 0.5, 0.7,
+                  0.3, 0.5, 0.7,
                   1.0]
         structure_metrics = ['masked_length_awarded', 'dtw']
         for struct_type in structure_metrics:
@@ -353,7 +351,7 @@ class FusedGromovWassersteinComputer:
         # Тепловая карта
         plt.subplot(1, 2, 2)
         distances_matrix = np.array([[results[st][alpha] for alpha in alphas]
-                                for st in structure_types])
+                                     for st in structure_types])
 
         im = plt.imshow(distances_matrix, aspect='auto', cmap='viridis')
         plt.colorbar(im, label='FGW расстояние')
