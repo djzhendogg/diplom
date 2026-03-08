@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import ot
 
-from experiment.distances import dist_pairwise_matrix, fastdtw_dist, masked_length_awarded, dist_matrix
+from distances import dist_pairwise_matrix, fastdtw_dist, masked_length_awarded, dist_matrix
 
 
 class FusedGromovWassersteinComputer:
