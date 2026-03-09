@@ -288,7 +288,7 @@ class FusedGromovWassersteinComputer:
         pre_c_1 = self.prepare_structures(x_1, structure_metric)
         for alpha in alphas:
             results_fugw[str(alpha)] = {}
-            print(f"\n=== alpha: {alpha} ===")
+            # print(f"\n=== alpha: {alpha} ===")
 
             for reg_marginal in reg_marginals:
                 dist, _ = self.compute_fugw_distance(
@@ -300,7 +300,7 @@ class FusedGromovWassersteinComputer:
                     precomputed_m=pre_m
                 )
                 results_fugw[str(alpha)][str(reg_marginal)] = dist
-                print(f"  reg_marginal={reg_marginal}: {dist:.4f}")
+                # print(f"  reg_marginal={reg_marginal}: {dist:.4f}")
 
         results_fgw = {}
         alphas = [0.0,
@@ -309,7 +309,7 @@ class FusedGromovWassersteinComputer:
         structure_metrics = ['masked_length_awarded', 'dtw']
         for struct_type in structure_metrics:
             results_fgw[struct_type] = {}
-            print(f"\n=== Структура: {struct_type} ===")
+            # print(f"\n=== Структура: {struct_type} ===")
 
             # Предвычисляем структуры для этого типа
             pre_c_0 = self.prepare_structures(x_0, struct_type)
@@ -325,7 +325,7 @@ class FusedGromovWassersteinComputer:
                     precomputed_m=pre_m
                 )
                 results_fgw[struct_type][str(alpha)] = dist
-                print(f"  alpha={alpha:.1f}: {dist:.4f}")
+                # print(f"  alpha={alpha:.1f}: {dist:.4f}")
 
         result = {'fgw': results_fgw, 'fugw': results_fugw}
 
