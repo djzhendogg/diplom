@@ -94,11 +94,22 @@ def main():
 
     # Статистика по ошибкам
     errors = [r for r in final_results if r['status'] == 'error']
+
     if errors:
         print(f"\nОшибки при обработке ({len(errors)}):")
         for error in errors:
             print(f"  - {error['file']}: {error['message']}")
-
+        errors_file = os.path.join(save_path, f'errors.json')
+        with open(errors_file, 'w', encoding='utf-8') as f:
+            json.dump({
+                'total_errors': len(errors),
+                'errors': errors
+            }, f, ensure_ascii=False, indent=4)
+        print(f"\nОшибки сохранены в файл: {errors_file}")
+        for error in errors:
+            print(f"  - {error['file']}: {error['message']}")
+    else:
+        print("\nОшибок не обнаружено!")
 
 
 if __name__ == "__main__":
