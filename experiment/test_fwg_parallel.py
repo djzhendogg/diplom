@@ -56,7 +56,7 @@ def process_file(file, path, save_path):
 def main():
     # Настройка путей
     path = "./data"
-    save_path = "./ot_result/fgw/"
+    save_path = "./ot_result/fgw_par/"
 
     # Создание директории для сохранения, если её нет
     os.makedirs(save_path, exist_ok=True)
