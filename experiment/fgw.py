@@ -3,6 +3,7 @@ import numpy as np
 import ot
 
 from distances import dist_pairwise_matrix, fastdtw_dist, masked_length_awarded, dist_matrix
+from preset_tools_difflen import pad_encoded_sequences
 
 
 class FusedGromovWassersteinComputer:
@@ -17,7 +18,7 @@ class FusedGromovWassersteinComputer:
 
         Args:
             x: входные данные (n_samples, m)
-            structure_metric: тип структуры (masked_length_awarded, dtw)
+            structure_metric: тип структуры (masked_length_awarded, dtw, ot)
 
         Returns:
             C: структурная матрица (n_samples, n_samples) или список матриц
@@ -29,6 +30,29 @@ class FusedGromovWassersteinComputer:
             c = dist_pairwise_matrix(x, fastdtw_dist)
         elif structure_metric == 'masked_length_awarded':
             c = dist_pairwise_matrix(x, masked_length_awarded)
+        elif structure_metric == 'ot':
+            x_padding = pad_encoded_sequences(x)
+            n_samples = x_padding.shape[0]
+
+            if n_samples > 5000:
+                c = np.zeros((n_samples, n_samples))
+                batch_size = 1000
+                for i in range(0, n_samples, batch_size):
+                    end_i = min(i + batch_size, n_samples)
+                    for j in range(0, n_samples, batch_size):
+                        end_j = min(j + batch_size, n_samples)
+                        # Вычисляем расстояния для батча
+                        batch_dist = ot.dist(
+                            x_padding[i:end_i],
+                            x_padding[j:end_j],
+                            metric='euclidean'
+                        )
+                        c[i:end_i, j:end_j] = batch_dist
+            else:
+                c = ot.dist(x_padding, x_padding, metric='euclidean')
+
+            c /= c.max()
+
         return c
 
     @staticmethod
@@ -43,6 +67,38 @@ class FusedGromovWassersteinComputer:
             m = dist_matrix(x, y, fastdtw_dist)
         elif feature_metric == 'masked_length_awarded':
             m = dist_matrix(x, y, masked_length_awarded)
+        elif feature_metric == 'ot':
+            max_len_x = max(len(seq) for seq in x)
+            max_len_y = max(len(seq) for seq in y)
+            x_padding = pad_encoded_sequences(x, max_len=max(max_len_x, max_len_y))
+            y_padding = pad_encoded_sequences(y, max_len=max(max_len_x, max_len_y))
+            n_samples0 = x_padding.shape[0]
+            n_samples1 = y_padding.shape[0]
+            max_size_threshold = 4000
+            # Проверяем, нужно ли использовать батчи
+            if max(n_samples0, n_samples1) > max_size_threshold:
+                m = np.zeros((n_samples0, n_samples1))
+                batch_size = 1000
+                # Вычисляем по батчам
+                for i in range(0, n_samples0, batch_size):
+                    end_i = min(i + batch_size, n_samples0)
+                    for j in range(0, n_samples1, batch_size):
+                        end_j = min(j + batch_size, n_samples1)
+
+                        # Вычисляем расстояния для батча
+                        batch_dist = ot.dist(
+                            x_padding[i:end_i],
+                            y_padding[j:end_j],
+                            metric='sqeuclidean'
+                        )
+                        m[i:end_i, j:end_j] = batch_dist
+            else:
+                # Для небольших матриц вычисляем сразу
+                m = ot.dist(x_padding, y_padding, metric='sqeuclidean')
+
+            # Нормализуем
+            if m.max() > 0:
+                m /= m.max()
         return m
 
     def compute_fgw_distance(self, x_0, x_1,
@@ -191,37 +247,57 @@ class FusedGromovWassersteinComputer:
 
         return fugw_dist, log
 
-    def compute_fgw_with_search(self, x_0, x_1, structure_metrics=None,
-                                alphas=None, make_plot=False):
+    def compute_fgw_with_search(self, x_0, x_1, structure_metrics=None, feature_metrics=None,
+                                alphas=None, make_plot=False, verbose=False):
         """
         Сравнивает FGW расстояние для разных типов структуры и alpha
         """
         if alphas is None:
             alphas = [0.0, 0.3, 0.5, 0.7, 1.0]
         if structure_metrics is None:
-            structure_metrics = ['masked_length_awarded', 'dtw']
+            structure_metrics = ['ot','masked_length_awarded', 'dtw']
+        if feature_metrics is None:
+            feature_metrics = ['ot','masked_length_awarded', 'dtw']
         results = {}
-        pre_m = self.prepare_feature_matrix(x_0, x_1, 'masked_length_awarded')
 
+        m_by_type = {}
+        for feature_metric in feature_metrics:
+            m = self.prepare_feature_matrix(x_0, x_1, feature_metric)
+            m_by_type[feature_metric] = m
+
+        c_by_type = {}
         for struct_type in structure_metrics:
-            results[struct_type] = {}
-            print(f"\n=== Структура: {struct_type} ===")
-
-            # Предвычисляем структуры для этого типа
+            c_classes = {}
             pre_c_0 = self.prepare_structures(x_0, struct_type)
             pre_c_1 = self.prepare_structures(x_1, struct_type)
+            c_classes['0'] = pre_c_0
+            c_classes['1'] = pre_c_1
+            c_by_type[struct_type] = c_classes
 
-            for alpha in alphas:
-                dist = self.compute_fgw_distance(
-                    x_0, x_1,
-                    alpha=alpha,
-                    structure_metric=struct_type,
-                    precomputed_c_0=pre_c_0,
-                    precomputed_c_1=pre_c_1,
-                    precomputed_m=pre_m
-                )
-                results[struct_type][str(alpha)] = dist
-                print(f"  alpha={alpha:.1f}: {dist:.4f}")
+        for feature_metric in feature_metrics:
+            pre_m = m_by_type[feature_metric]
+            results[feature_metric + '_M'] = {}
+            for struct_type in structure_metrics:
+                results[feature_metric + '_M'][struct_type + '_C'] = {}
+                if verbose:
+                    print(f"\n=== Структура: {struct_type} ===")
+
+                # Предвычисляем структуры для этого типа
+                pre_c_0 = c_by_type[struct_type]['0']
+                pre_c_1 = c_by_type[struct_type]['1']
+
+                for alpha in alphas:
+                    dist, _ = self.compute_fgw_distance(
+                        x_0, x_1,
+                        alpha=alpha,
+                        structure_metric=struct_type,
+                        precomputed_c_0=pre_c_0,
+                        precomputed_c_1=pre_c_1,
+                        precomputed_m=pre_m
+                    )
+                    results[feature_metric + '_M'][struct_type + '_C'][str(alpha)] = dist
+                    if verbose:
+                        print(f"  alpha={alpha:.1f}: {dist:.4f}")
 
         # Визуализация
         if make_plot:
@@ -242,7 +318,8 @@ class FusedGromovWassersteinComputer:
                 (3000, 300),
                 (1000, 500),
                 (500, 1000),
-                (300, 3000)
+                (300, 3000),
+                3000
             ]
 
         structure_metric = 'dtw'
@@ -266,7 +343,6 @@ class FusedGromovWassersteinComputer:
                 )
                 results[str(alpha)][str(reg_marginal)] = dist
                 print(f"  reg_marginal={reg_marginal:.1f}: {dist:.4f}")
-
         return results
 
     def compute_fgw_fugw_with_search(self, x_0, x_1):
@@ -274,10 +350,11 @@ class FusedGromovWassersteinComputer:
         reg_marginals = [
             1, (1, 0), (0, 1),
             10, 100, 1000,
-            (3000, 300),
-            (300, 3000),
             (1000, 500),
             (500, 1000),
+            (3000, 300),
+            (300, 3000),
+            3000
         ]
 
         structure_metric = 'dtw'
@@ -304,9 +381,11 @@ class FusedGromovWassersteinComputer:
 
         results_fgw = {}
         alphas = [0.0,
-                  0.3, 0.5, 0.7,
+                  0.3,
+                  0.5,
+                  0.7,
                   1.0]
-        structure_metrics = ['masked_length_awarded', 'dtw']
+        structure_metrics = ['masked_length_awarded', 'dtw', 'ot']
         for struct_type in structure_metrics:
             results_fgw[struct_type] = {}
             # print(f"\n=== Структура: {struct_type} ===")

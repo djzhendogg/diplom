@@ -7,7 +7,7 @@ from preset_tools_difflen import encode_seqs
 
 path = "./data"
 
-save_path = "./ot_result/"
+save_path = "./ot_result/fgw/"
 contents = os.listdir(path)
 files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f)) and f.endswith('.csv')]
 fgw_computer = FusedGromovWassersteinComputer()
@@ -18,7 +18,7 @@ for file in files:
     df_1 = df[df['label'] == 1]
     X0 = encode_seqs(df_0['sequence'].to_list())
     X1 = encode_seqs(df_1['sequence'].to_list())
-    dist_res = fgw_computer.compute_fgw_fugw_with_search(X0, X1)
+    dist_res = fgw_computer.compute_fgw_with_search(X0, X1)
     dist_res['len_0'] = len(X0)
     dist_res['len_1'] = len(X1)
 
