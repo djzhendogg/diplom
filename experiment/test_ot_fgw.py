@@ -1,6 +1,7 @@
 import json
 import os
 import pandas as pd
+import time
 
 from fgw import FusedGromovWassersteinComputer
 from preset_tools_difflen import encode_seqs
@@ -11,11 +12,11 @@ save_path = "./ot_result/fgw/"
 contents = os.listdir(path)
 files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f)) and f.endswith('.csv')]
 fgw_computer = FusedGromovWassersteinComputer()
-
+start_global_time = time.time()
 for file in files:
     df = pd.read_csv(path + '/' + file)
-    df_0 = df[df['label'] == 0]
-    df_1 = df[df['label'] == 1]
+    df_0 = df[df['label'] == 0][:10]
+    df_1 = df[df['label'] == 1][:10]
     X0 = encode_seqs(df_0['sequence'].to_list())
     X1 = encode_seqs(df_1['sequence'].to_list())
     dist_res = fgw_computer.compute_fgw_with_search(X0, X1)
@@ -27,4 +28,10 @@ for file in files:
     with open(save_path + f'{name}.json', 'w', encoding='utf-8') as f:
         json.dump(dist_res, f, ensure_ascii=False, indent=4)
 
+elapsed_global = time.time() - start_global_time
 
+print("\n" + "=" * 60)
+print("ОБРАБОТКА ЗАВЕРШЕНА")
+print("=" * 60)
+print(f"Всего файлов: {len(files)}")
+print(f"Общее время: {elapsed_global:.2f} сек ({elapsed_global / 60:.2f} мин)")
