@@ -237,7 +237,8 @@ class FusedGromovWassersteinComputer:
             loss_fun=loss_fun,
             alpha=alpha,
             log=True,
-            max_iter=100000
+            max_iter=10000,
+            max_iter_ot=10000
         )
         log['distance'] = fugw_dist
         log['plan_log'] = plan_log
@@ -305,44 +306,69 @@ class FusedGromovWassersteinComputer:
 
         return results
 
-    def compute_fugw_with_search(self, x_0, x_1,
-                                 alphas=None, reg_marginals=None):
+    def compute_fugw_with_search(self, x_0, x_1, structure_metrics=None, feature_metrics=None,
+                                 alphas=None, reg_marginals=None, verbose=False):
         """
         Сравнивает FGW расстояние для разных типов структуры и alpha
         """
         if alphas is None:
-            alphas = [0.0, 0.3, 0.5, 0.7, 1.0]
+            alphas = [0.3, 0.5, 0.7]
         if reg_marginals is None:
             reg_marginals = [
-                10, 100, 1000,
-                (3000, 300),
-                (1000, 500),
-                (500, 1000),
-                (300, 3000),
-                3000
+                10, 100,
+                1000,
+                3000,
+                (3000, 500),
+                (500, 3000),
             ]
-
-        structure_metric = 'dtw'
-        feature_metric = 'masked_length_awarded'
+        if structure_metrics is None:
+            structure_metrics = ['ot','masked_length_awarded', 'dtw']
+        if feature_metrics is None:
+            feature_metrics = ['ot','masked_length_awarded', 'dtw']
         results = {}
-        pre_m = self.prepare_feature_matrix(x_0, x_1, feature_metric)
-        pre_c_0 = self.prepare_structures(x_0, structure_metric)
-        pre_c_1 = self.prepare_structures(x_1, structure_metric)
-        for alpha in alphas:
-            results[str(alpha)] = {}
-            print(f"\n=== alpha: {alpha} ===")
 
-            for reg_marginal in reg_marginals:
-                dist = self.compute_fugw_distance(
-                    x_0, x_1,
-                    alpha=alpha,
-                    reg_marginals=reg_marginal,
-                    precomputed_c_0=pre_c_0,
-                    precomputed_c_1=pre_c_1,
-                    precomputed_m=pre_m
-                )
-                results[str(alpha)][str(reg_marginal)] = dist
-                print(f"  reg_marginal={reg_marginal:.1f}: {dist:.4f}")
+        m_by_type = {}
+        for feature_metric in feature_metrics:
+            m = self.prepare_feature_matrix(x_0, x_1, feature_metric)
+            m_by_type[feature_metric] = m
+
+        c_by_type = {}
+        for struct_type in structure_metrics:
+            c_classes = {}
+            pre_c_0 = self.prepare_structures(x_0, struct_type)
+            pre_c_1 = self.prepare_structures(x_1, struct_type)
+            c_classes['0'] = pre_c_0
+            c_classes['1'] = pre_c_1
+            c_by_type[struct_type] = c_classes
+
+
+        for feature_metric in feature_metrics:
+            pre_m = m_by_type[feature_metric]
+            results[feature_metric + '_M'] = {}
+            if verbose:
+                print(f"\n=== Структура M: {feature_metric} ===")
+            for struct_type in structure_metrics:
+                results[feature_metric + '_M'][struct_type + '_C'] = {}
+                pre_c_0 = c_by_type[struct_type]['0']
+                pre_c_1 = c_by_type[struct_type]['1']
+                if verbose:
+                    print(f"\n=== Структура C: {struct_type} ===")
+                for alpha in alphas:
+                    results[feature_metric + '_M'][struct_type + '_C'][str(alpha)] = {}
+                    if verbose:
+                        print(f"\n=== alpha: {alpha} ===")
+                    for reg_marginal in reg_marginals:
+                        dist, _ = self.compute_fugw_distance(
+                            x_0, x_1,
+                            alpha=alpha,
+                            reg_marginals=reg_marginal,
+                            precomputed_c_0=pre_c_0,
+                            precomputed_c_1=pre_c_1,
+                            precomputed_m=pre_m
+                        )
+                        results[feature_metric + '_M'][struct_type + '_C'][str(alpha)][str(reg_marginal)] = dist
+                        if verbose:
+                            print(f"  reg_marginal={reg_marginal}: {dist:.4f}")
         return results
 
     def compute_fgw_fugw_with_search(self, x_0, x_1):
