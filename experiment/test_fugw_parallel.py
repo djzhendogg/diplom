@@ -21,12 +21,7 @@ def process_file(file, path, save_path):
 
         # Создаем экземпляр компьютера для каждого процесса
         fgw_computer = FusedGromovWassersteinComputer()
-        dist_res = fgw_computer.compute_fugw_with_search(X0, X1, verbose=True,
-                                                         reg_marginals=[
-                                                             10, 100,
-                                                             (500, 3000),
-                                                         ], alphas = [0.5, 0.7]
-                                                         )
+        dist_res = fgw_computer.compute_fugw_with_search(X0, X1)
         dist_res['len_0'] = len(X0)
         dist_res['len_1'] = len(X1)
 
@@ -62,8 +57,6 @@ def main():
     # Получение списка файлов
     files = [f for f in os.listdir(path)
              if os.path.isfile(os.path.join(path, f)) and f.endswith('.csv')]
-    files = ['amp_csamp.csv',
-'amp_fernandes.csv',]
     if not files:
         print("CSV файлы не найдены в директории:", path)
         return
@@ -73,8 +66,8 @@ def main():
 
     # Настройка многопроцессорности
     num_processes = mp.cpu_count()  # Используем все доступные ядра
-    if num_processes > 2:
-        num_processes = 2
+    if num_processes > 20:
+        num_processes = 20
     print(f"Используется процессов: {num_processes}")
 
     # Создание пула процессов
