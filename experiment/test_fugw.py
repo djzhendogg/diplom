@@ -17,8 +17,8 @@ print("ОБРАБОТКА с GPU")
 start_time = time.time()
 for file in files:
     df = pd.read_csv(path + '/' + file)
-    df_0 = df[df['label'] == 0][:100]
-    df_1 = df[df['label'] == 1][:100]
+    df_0 = df[df['label'] == 0][:1000]
+    df_1 = df[df['label'] == 1][:1000]
     X0 = encode_seqs(df_0['sequence'].to_list())
     X1 = encode_seqs(df_1['sequence'].to_list())
     dist_res = fgw_computer.compute_fugw_distance(X0, X1, reg_marginals=3000, verbose=True, on_gpu=True)
