@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import ot
+import torch
 
 from distances import dist_pairwise_matrix, fastdtw_dist, masked_length_awarded, dist_matrix
 from preset_tools_difflen import pad_encoded_sequences
@@ -186,7 +187,7 @@ class FusedGromovWassersteinComputer:
                               precomputed_c_0=None,
                               precomputed_c_1=None,
                               precomputed_m=None,
-                              alpha=0.5, verbose=False):
+                              alpha=0.5, verbose=False, on_gpu=False):
         """
         Вычисляет Fused Unbalanced Gromov-Wasserstein расстояние между двумя наборами матриц
 
@@ -204,6 +205,7 @@ class FusedGromovWassersteinComputer:
             precomputed_c_0: вычисленные с_0
             precomputed_c_1: вычисленные с_1
             precomputed_m: вычисленные m
+            on_gpu: use GPU
         """
         # Матрица признаковых расстояний (для Fused term)
         log = {}
@@ -211,7 +213,6 @@ class FusedGromovWassersteinComputer:
             m = self.prepare_feature_matrix(x_0, x_1, feature_metric)
         else:
             m = precomputed_m
-        log['M'] = m
 
         # Веса объектов (равномерные)
         n0, n1 = len(x_0), len(x_1)
@@ -228,8 +229,22 @@ class FusedGromovWassersteinComputer:
             c_1 = self.prepare_structures(x_1, structure_metric)
         else:
             c_1 = precomputed_c_1
+
+        log['M'] = m
         log['C0'] = c_0
         log['C1'] = c_1
+
+        if torch.cuda.is_available() and on_gpu:
+            device = torch.device("cuda")
+            print(f"Using GPU: {torch.cuda.get_device_name(0)}")
+            dtype = torch.float32
+
+            c_0 = torch.tensor(c_0, dtype=dtype, device=device)
+            c_1 = torch.tensor(c_1, dtype=dtype, device=device)
+            m = torch.tensor(m, dtype=dtype, device=device)
+            p = torch.tensor(p, dtype=dtype, device=device)
+            q = torch.tensor(q, dtype=dtype, device=device)
+
         fugw_dist, plan_log = ot.gromov.fused_unbalanced_gromov_wasserstein2(
             Cx=c_0, Cy=c_1, wx=p, wy=q,
             reg_marginals=reg_marginals,
@@ -238,8 +253,18 @@ class FusedGromovWassersteinComputer:
             alpha=alpha,
             log=True,
             max_iter=10000,
-            max_iter_ot=10000
+            max_iter_ot=10000,
+            divergence='kl',
+            unbalanced_solver='sinkhorn',
+            epsilon=0.1
         )
+
+        if isinstance(fugw_dist, torch.Tensor):
+            fugw_dist = fugw_dist.cpu().numpy()
+            print(f"FGW distance from Tensor: {fugw_dist}")
+        else:
+            print(f"FGW distance: {fugw_dist}")
+
         log['distance'] = fugw_dist
         log['plan_log'] = plan_log
 
