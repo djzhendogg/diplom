@@ -8,6 +8,8 @@ import torch
 from distances import dist_pairwise_matrix, fastdtw_dist, masked_length_awarded, dist_matrix
 from preset_tools_difflen import pad_encoded_sequences
 
+torch.cuda.set_device(4)
+
 
 class FusedGromovWassersteinComputer:
     """
