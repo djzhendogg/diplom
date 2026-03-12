@@ -33,7 +33,7 @@ print("=" * 60)
 print("\n" + "=" * 60)
 print("ОБРАБОТКА без GPU")
 start_time = time.time()
-for file in files:
+for file in ['antioxidant.csv']:
     df = pd.read_csv(path + '/' + file)
     df_0 = df[df['label'] == 0]
     df_1 = df[df['label'] == 1]
