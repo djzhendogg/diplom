@@ -1,5 +1,3 @@
-import time
-
 import matplotlib.pyplot as plt
 import numpy as np
 import ot
@@ -250,7 +248,6 @@ class FusedGromovWassersteinComputer:
             q = torch.tensor(q, dtype=dtype, device=device)
             if verbose:
                 print(f"Используемый backend: {ot.backend.get_backend(c_0, c_1, m, p, q)}")
-        start_time = time.time()
         fugw_dist, plan_log = ot.gromov.fused_unbalanced_gromov_wasserstein2(
             Cx=c_0, Cy=c_1, wx=p, wy=q,
             reg_marginals=reg_marginals,
@@ -264,8 +261,6 @@ class FusedGromovWassersteinComputer:
             unbalanced_solver='sinkhorn',
             epsilon=0.1
         )
-        total_time = time.time() - start_time
-        print(f"Время расчета FUGW: {total_time:.2f} сек ({total_time / 60:.2f} мин)")
         if isinstance(fugw_dist, torch.Tensor):
             fugw_dist = fugw_dist.cpu().numpy()
             if verbose: print(f"FGW distance from Tensor: {fugw_dist}")
