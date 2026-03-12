@@ -8,8 +8,6 @@ import torch
 from distances import dist_pairwise_matrix, fastdtw_dist, masked_length_awarded, dist_matrix
 from preset_tools_difflen import pad_encoded_sequences
 
-torch.cuda.set_device(4)
-
 
 class FusedGromovWassersteinComputer:
     """
@@ -191,7 +189,7 @@ class FusedGromovWassersteinComputer:
                               precomputed_c_0=None,
                               precomputed_c_1=None,
                               precomputed_m=None,
-                              alpha=0.5, verbose=False, on_gpu=False):
+                              alpha=0.5, verbose=False, on_gpu=False, write_log=False):
         """
         Вычисляет Fused Unbalanced Gromov-Wasserstein расстояние между двумя наборами матриц
 
@@ -210,6 +208,7 @@ class FusedGromovWassersteinComputer:
             precomputed_c_1: вычисленные с_1
             precomputed_m: вычисленные m
             on_gpu: use GPU
+            write_log: make log
         """
         # Матрица признаковых расстояний (для Fused term)
         log = {}
@@ -233,14 +232,15 @@ class FusedGromovWassersteinComputer:
             c_1 = self.prepare_structures(x_1, structure_metric)
         else:
             c_1 = precomputed_c_1
-
-        log['M'] = m
-        log['C0'] = c_0
-        log['C1'] = c_1
+        if write_log:
+            log['M'] = m
+            log['C0'] = c_0
+            log['C1'] = c_1
 
         if torch.cuda.is_available() and on_gpu:
             device = torch.device("cuda")
-            print(f"Using GPU: {torch.cuda.get_device_name(0)}")
+            if verbose:
+                print(f"Using GPU: {torch.cuda.get_device_name(0)}")
             dtype = torch.float32
 
             c_0 = torch.tensor(c_0, dtype=dtype, device=device)
@@ -248,7 +248,8 @@ class FusedGromovWassersteinComputer:
             m = torch.tensor(m, dtype=dtype, device=device)
             p = torch.tensor(p, dtype=dtype, device=device)
             q = torch.tensor(q, dtype=dtype, device=device)
-            print(f"Используемый backend: {ot.backend.get_backend(c_0, c_1, m, p, q)}")
+            if verbose:
+                print(f"Используемый backend: {ot.backend.get_backend(c_0, c_1, m, p, q)}")
         start_time = time.time()
         fugw_dist, plan_log = ot.gromov.fused_unbalanced_gromov_wasserstein2(
             Cx=c_0, Cy=c_1, wx=p, wy=q,
@@ -267,12 +268,12 @@ class FusedGromovWassersteinComputer:
         print(f"Время расчета FUGW: {total_time:.2f} сек ({total_time / 60:.2f} мин)")
         if isinstance(fugw_dist, torch.Tensor):
             fugw_dist = fugw_dist.cpu().numpy()
-            print(f"FGW distance from Tensor: {fugw_dist}")
+            if verbose: print(f"FGW distance from Tensor: {fugw_dist}")
         else:
-            print(f"FGW distance: {fugw_dist}")
-
-        log['distance'] = fugw_dist
-        log['plan_log'] = plan_log
+            if verbose: print(f"FGW distance: {fugw_dist}")
+        if write_log:
+            log['distance'] = fugw_dist
+            log['plan_log'] = plan_log
 
         if verbose:
             print(f"FGW расстояние (alpha={alpha}): {fugw_dist:.4f}")
@@ -338,7 +339,7 @@ class FusedGromovWassersteinComputer:
         return results
 
     def compute_fugw_with_search(self, x_0, x_1, structure_metrics=None, feature_metrics=None,
-                                 alphas=None, reg_marginals=None, verbose=False):
+                                 alphas=None, reg_marginals=None, verbose=False, on_gpu=False):
         """
         Сравнивает FGW расстояние для разных типов структуры и alpha
         """
@@ -395,7 +396,9 @@ class FusedGromovWassersteinComputer:
                             reg_marginals=reg_marginal,
                             precomputed_c_0=pre_c_0,
                             precomputed_c_1=pre_c_1,
-                            precomputed_m=pre_m
+                            precomputed_m=pre_m,
+                            on_gpu=on_gpu,
+                            verbose=verbose
                         )
                         results[feature_metric + '_M'][struct_type + '_C'][str(alpha)][str(reg_marginal)] = dist
                         if verbose:
