@@ -248,6 +248,7 @@ class FusedGromovWassersteinComputer:
             m = torch.tensor(m, dtype=dtype, device=device)
             p = torch.tensor(p, dtype=dtype, device=device)
             q = torch.tensor(q, dtype=dtype, device=device)
+            print(f"Используемый backend: {ot.backend.get_backend(c_0, c_1, m, p, q)}")
         start_time = time.time()
         fugw_dist, plan_log = ot.gromov.fused_unbalanced_gromov_wasserstein2(
             Cx=c_0, Cy=c_1, wx=p, wy=q,
