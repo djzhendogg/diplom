@@ -21,7 +21,12 @@ def process_file(file, path, save_path):
 
         # Создаем экземпляр компьютера для каждого процесса
         fgw_computer = FusedGromovWassersteinComputer()
-        dist_res = fgw_computer.compute_fugw_with_search(X0, X1, verbose=True)
+        dist_res = fgw_computer.compute_fugw_with_search(X0, X1, verbose=True,
+                                                         reg_marginals=[
+                                                             10, 100,
+                                                             (500, 3000),
+                                                         ], alphas = [0.5, 0.7]
+                                                         )
         dist_res['len_0'] = len(X0)
         dist_res['len_1'] = len(X1)
 
