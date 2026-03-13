@@ -29,8 +29,8 @@ def general_characterize(df, name):
     mean_len = df['len'].mean()
     std_len = np.std(df['len'])
     median_len = np.median(df['len'])
-    min_len = df['len'].min()
-    max_len = df['len'].max()
+    min_len = int(df['len'].min())
+    max_len = int(df['len'].max())
 
     entropy_shannon_entropy = feature_entropy(df['shannon_entropy'])
     mean_shannon_entropy = df['shannon_entropy'].mean()
@@ -43,8 +43,8 @@ def general_characterize(df, name):
     mean_unique_trimers = df['unique_trimers'].mean()
     std_unique_trimers = np.std(df['unique_trimers'])
     median_unique_trimers = np.median(df['unique_trimers'])
-    min_unique_trimers = df['unique_trimers'].min()
-    max_unique_trimers = df['unique_trimers'].max()
+    min_unique_trimers = int(df['unique_trimers'].min())
+    max_unique_trimers = int(df['unique_trimers'].max())
 
     entropy_unique_trimers_on_all = feature_entropy(df['unique_trimers_on_all'])
     mean_unique_trimers_on_all = df['unique_trimers_on_all'].mean()
