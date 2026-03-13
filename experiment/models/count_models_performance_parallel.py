@@ -64,3 +64,7 @@ def main():
             print(f"  - {error['file']}: {error['message']}")
     else:
         print("\nОшибок не обнаружено!")
+
+
+if __name__ == "__main__":
+    main()
