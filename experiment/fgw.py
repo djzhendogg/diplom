@@ -109,7 +109,7 @@ class FusedGromovWassersteinComputer:
                              precomputed_c_0=None,
                              precomputed_c_1=None,
                              precomputed_m=None,
-                             alpha=0.5, count_plan=False, verbose=False, on_gpu=True, write_log=False):
+                             alpha=0.5, count_plan=False, verbose=False, on_gpu=False, write_log=False):
         """
         Вычисляет Fused Gromov-Wasserstein расстояние между двумя наборами матриц
 
@@ -218,8 +218,8 @@ class FusedGromovWassersteinComputer:
             max_iter=50000
         )
         if isinstance(fgw_dist, torch.Tensor):
-            fugw_dist = fgw_dist.cpu().numpy()
-            if verbose: print(f"FGW distance from Tensor: {fugw_dist}")
+            fgw_dist = fgw_dist.cpu().numpy()
+            if verbose: print(f"FGW distance from Tensor: {fgw_dist}")
 
         return fgw_dist, log
 
