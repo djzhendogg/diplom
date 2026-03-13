@@ -55,6 +55,7 @@ def general_characterize(df, name):
 
     return {
         "name": name,
+        "samples_num": df.shape[0],
 
         "entropy_levenshtein": entropy_levenshtein,
         "mean_levenshtein":mean_levenshtein,
