@@ -13,9 +13,10 @@ def general_characterize(df, name):
     levenshtein_distances_matrix = levenshtein_distances(df['sequence'].to_list())
     p_i, p_global, edges = build_histograms_from_distance_matrix(levenshtein_distances_matrix, n_bins=12, alpha=1e-9)
 
-    df['len'] = df['seq'].str.len()
-    df['unique_trimers_on_all'] = df['seq'].apply(unique_trimers_on_all_trimers)
-    df['shannon_entropy'] = df['seq'].apply(shannon_entropy)
+    df['len'] = df['sequence'].str.len()
+    df['unique_trimers'] = df['sequence'].apply(unique_trimers)
+    df['unique_trimers_on_all'] = df['sequence'].apply(unique_trimers_on_all_trimers)
+    df['shannon_entropy'] = df['sequence'].apply(shannon_entropy)
 
     entropy_levenshtein = compute_global_H_from_mixture(p_global)
     mean_levenshtein = np.mean(levenshtein_distances_matrix)
@@ -24,23 +25,30 @@ def general_characterize(df, name):
     min_levenshtein = np.min(levenshtein_distances_matrix)
     max_levenshtein = np.max(levenshtein_distances_matrix)
 
-    entropy_len = calculate_entropy(df['len'])
+    entropy_len = feature_entropy(df['len'])
     mean_len = df['len'].mean()
     std_len = np.std(df['len'])
     median_len = np.median(df['len'])
     min_len = df['len'].min()
     max_len = df['len'].max()
 
+    entropy_shannon_entropy = feature_entropy(df['shannon_entropy'])
     mean_shannon_entropy = df['shannon_entropy'].mean()
     std_shannon_entropy = np.std(df['shannon_entropy'])
-    entropy_shannon_entropy = feature_entropy(df['shannon_entropy'])
     median_shannon_entropy = np.median(df['shannon_entropy'])
     min_shannon_entropy = df['shannon_entropy'].min()
     max_shannon_entropy = df['shannon_entropy'].max()
 
+    entropy_unique_trimers = feature_entropy(df['unique_trimers'])
+    mean_unique_trimers = df['unique_trimers'].mean()
+    std_unique_trimers = np.std(df['unique_trimers'])
+    median_unique_trimers = np.median(df['unique_trimers'])
+    min_unique_trimers = df['unique_trimers'].min()
+    max_unique_trimers = df['unique_trimers'].max()
+
+    entropy_unique_trimers_on_all = feature_entropy(df['unique_trimers_on_all'])
     mean_unique_trimers_on_all = df['unique_trimers_on_all'].mean()
     std_unique_trimers_on_all = np.std(df['unique_trimers_on_all'])
-    entropy_unique_trimers_on_all = feature_entropy(df['unique_trimers_on_all'])
     median_unique_trimers_on_all = np.median(df['unique_trimers_on_all'])
     min_unique_trimers_on_all = df['unique_trimers_on_all'].min()
     max_unique_trimers_on_all = df['unique_trimers_on_all'].max()
@@ -68,6 +76,13 @@ def general_characterize(df, name):
         "median_shannon_entropy": median_shannon_entropy,
         "min_shannon_entropy": min_shannon_entropy,
         "max_shannon_entropy": max_shannon_entropy,
+
+        "entropy_unique_trimers": entropy_unique_trimers,
+        "mean_unique_trimers": mean_unique_trimers,
+        "std_unique_trimers": std_unique_trimers,
+        "median_unique_trimers": median_unique_trimers,
+        "min_unique_trimers": min_unique_trimers,
+        "max_unique_trimers": max_unique_trimers,
 
         "entropy_unique_trimers_on_all": entropy_unique_trimers_on_all,
         "mean_unique_trimers_on_all": mean_unique_trimers_on_all,
@@ -104,18 +119,36 @@ def levenshtein_distances(sequences: list) -> np.array:
     return distances
 
 
-def feature_entropy(values, bins=20):
+def feature_entropy(values):
+    values = np.asarray(values)
+
+    # Min-Max нормализация
+    vmin, vmax = values.min(), values.max()
+    if vmax == vmin:
+        return 0.0
+    values_norm = (values - vmin) / (vmax - vmin)
+    bins = optimal_bins_fd(values_norm)
+    hist, edges = np.histogram(values_norm, bins=bins, range=(0, 1))
+    p = hist / hist.sum()
+    p = p[p > 0]
+
+    return entropy(p, base=np.e)
+
+
+def optimal_bins_fd(values):
     """
-    values — np.array или pd.Series значений в [0,1]
-    bins — сколько корзин для гистограммы
+    Правило Фридмана-Диакониса: 2 * IQR * n^(-1/3)
     """
-    hist, edges = np.histogram(values, bins=bins, range=(0, 1), density=False)
+    q75, q25 = np.percentile(values, [75, 25])
+    iqr = q75 - q25
+    n = len(values)
 
-    p = hist / hist.sum()  # превращаем в вероятности
-    p = p[p > 0]  # убираем нулевые (иначе log(0))
+    if iqr == 0:
+        return 10
 
-    return entropy(p, base=np.e)  # натуральный лог (можно base=2)
-
+    bin_width = 2 * iqr / (n ** (1 / 3))
+    bins = int((values.max() - values.min()) / bin_width)
+    return max(10, min(100, bins))
 
 def count_trimers(sequence):
     if len(sequence) < 3:
