@@ -254,44 +254,60 @@ class FusedGromovWassersteinComputer:
         """
         # Матрица признаковых расстояний (для Fused term)
         log = {}
+        device = None
+        dtype = None
+        if on_gpu:
+            assert torch.cuda.is_available(), "CUDA не доступна"
+            device = torch.device("cuda")
+            if verbose: print(f"Using GPU: {torch.cuda.get_device_name(0)}")
+            dtype = torch.float32
+
         if precomputed_m is None:
             m = self.prepare_feature_matrix(x_0, x_1, feature_metric)
+            if on_gpu:
+                if verbose: print("перенос m на cuda")
+                m = torch.tensor(m, dtype=dtype, device=device)
         else:
             m = precomputed_m
+            if on_gpu:
+                assert isinstance(m, torch.Tensor), f"m должен быть torch.Tensor, а получен {type(m)}"
+                if verbose: print("m is torch.Tensor")
+        # Получаем структурные матрицы
+        if precomputed_c_0 is None:
+            c_0 = self.prepare_structures(x_0, structure_metric)
+            if on_gpu:
+                if verbose: print("перенос c_0 на cuda")
+                c_0 = torch.tensor(c_0, dtype=dtype, device=device)
+        else:
+            c_0 = precomputed_c_0
+            if on_gpu:
+                assert isinstance(c_0, torch.Tensor), f"c_0 должен быть torch.Tensor, а получен {type(c_0)}"
+                if verbose: print("c_0 is torch.Tensor")
 
+        if precomputed_c_1 is None:
+            c_1 = self.prepare_structures(x_1, structure_metric)
+            if on_gpu:
+                if verbose: print("перенос c_1 на cuda")
+                c_1 = torch.tensor(c_1, dtype=dtype, device=device)
+        else:
+            c_1 = precomputed_c_1
+            if on_gpu:
+                assert isinstance(c_1, torch.Tensor), f"c_1 должен быть torch.Tensor, а получен {type(c_1)}"
+                if verbose: print("c_1 is torch.Tensor")
         # Веса объектов (равномерные)
         n0, n1 = len(x_0), len(x_1)
         p = np.ones(n0) / n0
         q = np.ones(n1) / n1
+        if on_gpu:
+            p = torch.tensor(p, dtype=dtype, device=device)
+            q = torch.tensor(q, dtype=dtype, device=device)
 
-        # Получаем структурные матрицы
-        if precomputed_c_0 is None:
-            c_0 = self.prepare_structures(x_0, structure_metric)
-        else:
-            c_0 = precomputed_c_0
-
-        if precomputed_c_1 is None:
-            c_1 = self.prepare_structures(x_1, structure_metric)
-        else:
-            c_1 = precomputed_c_1
         if write_log:
             log['M'] = m
             log['C0'] = c_0
             log['C1'] = c_1
 
-        if torch.cuda.is_available() and on_gpu:
-            device = torch.device("cuda")
-            if verbose:
-                print(f"Using GPU: {torch.cuda.get_device_name(0)}")
-            dtype = torch.float32
-
-            c_0 = torch.tensor(c_0, dtype=dtype, device=device)
-            c_1 = torch.tensor(c_1, dtype=dtype, device=device)
-            m = torch.tensor(m, dtype=dtype, device=device)
-            p = torch.tensor(p, dtype=dtype, device=device)
-            q = torch.tensor(q, dtype=dtype, device=device)
-            if verbose:
-                print(f"Используемый backend: {ot.backend.get_backend(c_0, c_1, m, p, q)}")
+        if verbose: print(f"Используемый backend: {ot.backend.get_backend(c_0, c_1, m, p, q)}")
         fugw_dist, plan_log = ot.gromov.fused_unbalanced_gromov_wasserstein2(
             Cx=c_0, Cy=c_1, wx=p, wy=q,
             reg_marginals=reg_marginals,
@@ -314,8 +330,7 @@ class FusedGromovWassersteinComputer:
             log['distance'] = fugw_dist
             log['plan_log'] = plan_log
 
-        if verbose:
-            print(f"FGW расстояние (alpha={alpha}): {fugw_dist:.4f}")
+        if verbose: print(f"FGW расстояние (alpha={alpha}): {fugw_dist:.4f}")
 
         return fugw_dist, log
 
@@ -450,6 +465,14 @@ class FusedGromovWassersteinComputer:
         """
         Сравнивает FGW расстояние для разных типов структуры и alpha
         """
+        device = None
+        dtype = None
+        if on_gpu:
+            assert torch.cuda.is_available(), "CUDA не доступна"
+            device = torch.device("cuda")
+            if verbose: print(f"Using GPU: {torch.cuda.get_device_name(0)}")
+            dtype = torch.float32
+
         if alphas is None:
             alphas = [0.3, 0.5, 0.7]
         if reg_marginals is None:
@@ -469,6 +492,10 @@ class FusedGromovWassersteinComputer:
         m_by_type = {}
         for feature_metric in feature_metrics:
             m = self.prepare_feature_matrix(x_0, x_1, feature_metric)
+
+            if on_gpu:
+                m = torch.tensor(m, dtype=dtype, device=device)
+
             m_by_type[feature_metric] = m
 
         c_by_type = {}
@@ -476,6 +503,11 @@ class FusedGromovWassersteinComputer:
             c_classes = {}
             pre_c_0 = self.prepare_structures(x_0, struct_type)
             pre_c_1 = self.prepare_structures(x_1, struct_type)
+
+            if on_gpu:
+                pre_c_0 = torch.tensor(pre_c_0, dtype=dtype, device=device)
+                pre_c_1 = torch.tensor(pre_c_1, dtype=dtype, device=device)
+
             c_classes['0'] = pre_c_0
             c_classes['1'] = pre_c_1
             c_by_type[struct_type] = c_classes
@@ -484,18 +516,15 @@ class FusedGromovWassersteinComputer:
         for feature_metric in feature_metrics:
             pre_m = m_by_type[feature_metric]
             results[feature_metric + '_M'] = {}
-            if verbose:
-                print(f"\n=== Структура M: {feature_metric} ===")
+            if verbose: print(f"\n=== Структура M: {feature_metric} ===")
             for struct_type in structure_metrics:
                 results[feature_metric + '_M'][struct_type + '_C'] = {}
                 pre_c_0 = c_by_type[struct_type]['0']
                 pre_c_1 = c_by_type[struct_type]['1']
-                if verbose:
-                    print(f"\n=== Структура C: {struct_type} ===")
+                if verbose: print(f"\n=== Структура C: {struct_type} ===")
                 for alpha in alphas:
                     results[feature_metric + '_M'][struct_type + '_C'][str(alpha)] = {}
-                    if verbose:
-                        print(f"\n=== alpha: {alpha} ===")
+                    if verbose: print(f"\n=== alpha: {alpha} ===")
                     for reg_marginal in reg_marginals:
                         dist, _ = self.compute_fugw_distance(
                             x_0, x_1,
@@ -508,8 +537,7 @@ class FusedGromovWassersteinComputer:
                             verbose=verbose
                         )
                         results[feature_metric + '_M'][struct_type + '_C'][str(alpha)][str(reg_marginal)] = dist
-                        if verbose:
-                            print(f"  reg_marginal={reg_marginal}: {dist:.4f}")
+                        if verbose: print(f"  reg_marginal={reg_marginal}: {dist:.4f}")
         return results
 
     def compute_fgw_fugw_with_search(self, x_0, x_1):
