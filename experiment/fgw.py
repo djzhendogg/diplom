@@ -218,7 +218,7 @@ class FusedGromovWassersteinComputer:
             max_iter=50000
         )
         if isinstance(fgw_dist, torch.Tensor):
-            fgw_dist = fgw_dist.cpu().numpy()
+            fgw_dist = fgw_dist.cpu().numpy().item()
             if verbose: print(f"FGW distance from Tensor: {fgw_dist}")
 
         return fgw_dist, log
