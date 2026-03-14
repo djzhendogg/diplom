@@ -484,9 +484,9 @@ class FusedGromovWassersteinComputer:
                 (500, 3000),
             ]
         if structure_metrics is None:
-            structure_metrics = ['ot','masked_length_awarded', 'dtw']
+            structure_metrics = ['ot', 'masked_length_awarded', 'dtw']
         if feature_metrics is None:
-            feature_metrics = ['ot','masked_length_awarded', 'dtw']
+            feature_metrics = ['ot', 'masked_length_awarded', 'dtw']
         results = {}
 
         m_by_type = {}

@@ -18,7 +18,7 @@ X1 = encode_seqs(df_1['sequence'].to_list())
 
 fgw_computer = FusedGromovWassersteinComputer()
 dist_res = fgw_computer.compute_fugw_with_search(
-    X0, X1, verbose=True, on_gpu=True,
+    X0, X1, verbose=True, on_gpu=False,
     alphas=[0.5],
     reg_marginals = [
                     10, 100,
