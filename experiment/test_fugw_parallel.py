@@ -93,7 +93,7 @@ def main():
         # Асинхронный запуск обработки
         results = []
         for i, file in enumerate(files):
-            result = pool.apply_async(process_func, (file,))
+            result = pool.apply_async(process_func, (file + '.csv',))
             results.append(result)
 
 
