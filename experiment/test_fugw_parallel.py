@@ -21,7 +21,16 @@ def process_file(file, path, save_path):
 
         # Создаем экземпляр компьютера для каждого процесса
         fgw_computer = FusedGromovWassersteinComputer()
-        dist_res = fgw_computer.compute_fugw_with_search(X0, X1)
+        dist_res = fgw_computer.compute_fugw_with_search(
+            X0, X1, verbose=False, on_gpu=False,
+            alphas=[0.3, 0.5, 0.7],
+            reg_marginals = [
+                            10,
+                            100,
+                            1000,
+                            3000
+                        ]
+        )
         dist_res['len_0'] = len(X0)
         dist_res['len_1'] = len(X1)
 
@@ -49,14 +58,20 @@ def process_file(file, path, save_path):
 def main():
     # Настройка путей
     path = "./data"
-    save_path = "./ot_result/fugw_par/"
+    save_path = "./ot_result/fugw_par_cut/"
 
     # Создание директории для сохранения, если её нет
     os.makedirs(save_path, exist_ok=True)
 
     # Получение списка файлов
-    files = [f for f in os.listdir(path)
-             if os.path.isfile(os.path.join(path, f)) and f.endswith('.csv')]
+    files_data = [f.split('.')[0] for f in os.listdir(path)
+                  if os.path.isfile(os.path.join(path, f)) and f.endswith('.csv')]
+
+    path2 = './ot_result/fugw_par'
+    files_fugw = [f.split('.')[0] for f in os.listdir(path2)
+                  if os.path.isfile(os.path.join(path2, f)) and f.endswith('.json')]
+    files = list(set(files_data) - set(files_fugw))
+
     if not files:
         print("CSV файлы не найдены в директории:", path)
         return
@@ -66,8 +81,8 @@ def main():
 
     # Настройка многопроцессорности
     num_processes = mp.cpu_count()  # Используем все доступные ядра
-    if num_processes > 20:
-        num_processes = 20
+    if num_processes > 15:
+        num_processes = 15
     print(f"Используется процессов: {num_processes}")
 
     # Создание пула процессов
