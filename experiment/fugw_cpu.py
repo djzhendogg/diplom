@@ -21,9 +21,10 @@ fgw_computer = FusedGromovWassersteinComputer()
 start_time = time.time()
 dist_res = fgw_computer.compute_fugw_with_search(
     X0, X1, verbose=True, on_gpu=False,
-    alphas=[0.5],
+    alphas=[0.3, 0.5, 0.7],
     reg_marginals = [
-                    10, 100,
+                    10,
+                    100,
                     1000,
                     3000
                 ]
