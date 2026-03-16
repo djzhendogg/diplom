@@ -1,0 +1,275 @@
+{
+    "total_errors": 54,
+    "errors": [
+        {
+            "file": "amp_modlamp",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/amp_modlamp'"
+        },
+        {
+            "file": "antimicrobial_UniDL4BioPep",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/antimicrobial_UniDL4BioPep'"
+        },
+        {
+            "file": "isp_il10pred",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/isp_il10pred'"
+        },
+        {
+            "file": "atb_antitbp",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/atb_antitbp'"
+        },
+        {
+            "file": "hiv_rtv",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/hiv_rtv'"
+        },
+        {
+            "file": "nep_neuropipred",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/nep_neuropipred'"
+        },
+        {
+            "file": "tumor_t_cell_antigens",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/tumor_t_cell_antigens'"
+        },
+        {
+            "file": "antibacterial",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/antibacterial'"
+        },
+        {
+            "file": "cpp_kelmcpp",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/cpp_kelmcpp'"
+        },
+        {
+            "file": "hiv_idv",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/hiv_idv'"
+        },
+        {
+            "file": "cpp_mlcppue",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/cpp_mlcppue'"
+        },
+        {
+            "file": "anitinflamatory",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/anitinflamatory'"
+        },
+        {
+            "file": "antifungal",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/antifungal'"
+        },
+        {
+            "file": "tce_zhao",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/tce_zhao'"
+        },
+        {
+            "file": "amp_antibp2",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/amp_antibp2'"
+        },
+        {
+            "file": "aip_antiinflam",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/aip_antiinflam'"
+        },
+        {
+            "file": "ace_inhibitory_activity",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/ace_inhibitory_activity'"
+        },
+        {
+            "file": "afp_amppred",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/afp_amppred'"
+        },
+        {
+            "file": "toxic",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/toxic'"
+        },
+        {
+            "file": "anticancer_alternative",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/anticancer_alternative'"
+        },
+        {
+            "file": "hiv_sqv",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/hiv_sqv'"
+        },
+        {
+            "file": "bitter",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/bitter'"
+        },
+        {
+            "file": "amp_iamp2l",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/amp_iamp2l'"
+        },
+        {
+            "file": "atb_iantitb",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/atb_iantitb'"
+        },
+        {
+            "file": "antimalarial_main",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/antimalarial_main'"
+        },
+        {
+            "file": "hiv_apv",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/hiv_apv'"
+        },
+        {
+            "file": "antioxidant",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/antioxidant'"
+        },
+        {
+            "file": "hiv_protease",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/hiv_protease'"
+        },
+        {
+            "file": "umami",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/umami'"
+        },
+        {
+            "file": "quorum_sensing",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/quorum_sensing'"
+        },
+        {
+            "file": "cpp_cellppdmod",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/cpp_cellppdmod'"
+        },
+        {
+            "file": "antiviral",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/antiviral'"
+        },
+        {
+            "file": "pip_pipel",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/pip_pipel'"
+        },
+        {
+            "file": "toxic_PLPTP",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/toxic_PLPTP'"
+        },
+        {
+            "file": "cpp_cellppd",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/cpp_cellppd'"
+        },
+        {
+            "file": "anticancer_main",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/anticancer_main'"
+        },
+        {
+            "file": "bce_ibce",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/bce_ibce'"
+        },
+        {
+            "file": "afp_antifp",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/afp_antifp'"
+        },
+        {
+            "file": "antioxidant_UniDL4BioPep",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/antioxidant_UniDL4BioPep'"
+        },
+        {
+            "file": "hiv_bevirimat",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/hiv_bevirimat'"
+        },
+        {
+            "file": "cpp_sanders",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/cpp_sanders'"
+        },
+        {
+            "file": "avp_amppred",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/avp_amppred'"
+        },
+        {
+            "file": "hiv_lpv",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/hiv_lpv'"
+        },
+        {
+            "file": "cpp_mlcpp",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/cpp_mlcpp'"
+        },
+        {
+            "file": "avp_avppred",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/avp_avppred'"
+        },
+        {
+            "file": "hiv_nfv",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/hiv_nfv'"
+        },
+        {
+            "file": "HemoPI3",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/HemoPI3'"
+        },
+        {
+            "file": "hiv_v3",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/hiv_v3'"
+        },
+        {
+            "file": "Hemo_HAPPENN",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/Hemo_HAPPENN'"
+        },
+        {
+            "file": "blood_brain_barrier",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/blood_brain_barrier'"
+        },
+        {
+            "file": "hem_hemopi",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/hem_hemopi'"
+        },
+        {
+            "file": "antimicrobial",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/antimicrobial'"
+        },
+        {
+            "file": "cpp_cppredfl",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/cpp_cppredfl'"
+        },
+        {
+            "file": "neuropeptide",
+            "status": "error",
+            "message": "[Errno 2] No such file or directory: './data/neuropeptide'"
+        }
+    ]
+}
