@@ -203,7 +203,7 @@ class FusedGromovWassersteinComputer:
                 loss_fun=loss_fun,
                 alpha=alpha,
                 log=True,
-                max_iter=50000
+                max_iter=20000
             )
             if write_log:
                 log['T'] = t_plan
@@ -215,7 +215,7 @@ class FusedGromovWassersteinComputer:
             loss_fun=loss_fun,
             alpha=alpha,
             log=False,
-            max_iter=50000
+            max_iter=20000
         )
         if isinstance(fgw_dist, torch.Tensor):
             fgw_dist = fgw_dist.cpu().numpy().item()
