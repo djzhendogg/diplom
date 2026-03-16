@@ -41,10 +41,10 @@ def json_to_flat_df_auto(folder_path):
 # print(df_auto.head())
 
 
-df_auto = json_to_flat_df_auto('ot_result/fgw_par')
-df_auto.set_index(['name'], inplace=True)
-df_auto.to_csv('ot_result/dc_sequence_diversity.csv')
-print(df_auto.head())
+# df_auto = json_to_flat_df_auto('ot_result/fgw_par')
+# df_auto.set_index(['name'], inplace=True)
+# df_auto.to_csv('ot_result/dc_sequence_diversity.csv')
+# print(df_auto.head())
 
 
 def flatten_csv_files(folder_path):
@@ -65,7 +65,7 @@ def flatten_csv_files(folder_path):
         file_name = Path(file_path).stem
 
         # Создаем словарь для текущего файла
-        row_dict = {'source_file': file_name}
+        row_dict = {'name': file_name}
 
         # Для каждой строки (модели) создаем колонки с префиксом
         for _, row in df.iterrows():
@@ -88,7 +88,7 @@ def flatten_csv_files(folder_path):
 
 
 # Использование
-# df_flattened = flatten_csv_files('models/results')
-# df_flattened.to_csv('models/models_results.csv')
-# print(df_flattened.head())
+df_flattened = flatten_csv_files('models/results')
+df_flattened.to_csv('models/models_results.csv', index=False)
+print(df_flattened.head())
 
