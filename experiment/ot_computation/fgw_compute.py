@@ -6,7 +6,7 @@ import pandas as pd
 from core import OTGridSearch, encode_sequences, get_config, FGWSearchConfig
 
 path = "../data"
-save_path = "./results/"
+save_path = "./results/fgw/"
 config_path = "./configs/search/fgw.yaml"
 
 descriptors_path = "./descriptors/aa_descriptors_scaled.csv"
@@ -24,7 +24,8 @@ for file in files:
     searcher = OTGridSearch()
     config = get_config(config_path, FGWSearchConfig)
     dist_res = searcher.fgw_search(X0, X1, config)
-    print(dist_res)
+    dist_res['len_0'] = len(X0)
+    dist_res['len_1'] = len(X1)
 
     output_path = save_path + file.split('.')[0] + '.json'
     with open(output_path, 'w', encoding='utf-8') as f:
