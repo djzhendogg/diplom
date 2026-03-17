@@ -1,7 +1,12 @@
-max_iter: 10000
-max_iter_ot: 10000
-loss_fun: kl_loss
-divergence: kl
-unbalanced_solver: sinkhorn
-epsilon: 0.1
-log: true
+alphas:
+  - 0.5
+reg_marginals:
+  - 100
+structure_metrics:
+  - ot
+  - masked_length_awarded
+  - dtw
+feature_metrics: 
+  - ot
+  - masked_length_awarded
+  - dtw

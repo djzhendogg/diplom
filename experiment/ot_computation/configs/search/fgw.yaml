@@ -1,3 +1,14 @@
-max_iter: 20000
-log: true
-loss_fun: square_loss
+alphas:
+  - 0.0
+  - 0.3
+  - 0.5
+  - 0.7
+  - 1.0
+structure_metrics:
+  - ot
+  - masked_length_awarded
+  - dtw
+feature_metrics:
+  - ot
+  - masked_length_awarded
+  - dtw
