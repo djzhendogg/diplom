@@ -17,7 +17,6 @@ def get_config(filepath: str | Path, config_class: Type[T]) -> T:
 class FGWConfig:
     """Configuration for FGW."""
     max_iter: int
-    log: bool
     loss_fun: str
 
 
@@ -30,7 +29,6 @@ class FUGWConfig:
     divergence: str
     unbalanced_solver: str
     epsilon: float
-    log: bool
 
 
 @dataclass
