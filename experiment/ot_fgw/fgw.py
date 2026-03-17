@@ -1,13 +1,15 @@
 from __future__ import annotations
 
 import logging
-from typing import Sequence, Tuple
+from typing import Sequence, Optional
 
 import ot
 import torch
 
-from .matrices import compute_feature_matrix, compute_structure_matrix
-from .utils import setup_device, to_tensor, uniform_weights
+from config import FGWConfig
+from default_configs import default_fgw_config
+from matrices import compute_feature_matrix, compute_structure_matrix
+from utils import setup_device, to_tensor, uniform_weights
 
 logger = logging.getLogger(__name__)
 
@@ -17,22 +19,24 @@ class FusedGromovWasserstein:
     Compute Fused Gromov-Wasserstein distance.
     """
 
-    def compute(
-        self,
-        x0: Sequence,
-        x1: Sequence,
-        *,
-        structure_metric: str = "dtw",
-        feature_metric: str = "masked_length_awarded",
-        alpha: float = 0.5,
-        loss_fun: str = "square_loss",
-        precomputed_c0=None,
-        precomputed_c1=None,
-        precomputed_m=None,
-        compute_plan: bool = False,
-        on_gpu: bool = False,
-    ) -> Tuple[float, dict]:
+    def __init__(self, config: Optional[FGWConfig]):
+        if config is None:
+            self.config = config
+        else:
+            self.config = default_fgw_config()
 
+    def compute(
+            self,
+            x0: Sequence,
+            x1: Sequence,
+            structure_metric: str = "dtw",
+            feature_metric: str = "masked_length_awarded",
+            alpha: float = 0.5,
+            precomputed_c0=None,
+            precomputed_c1=None,
+            precomputed_m=None,
+            on_gpu: bool = False,
+    ) -> float:
         device, dtype = setup_device(on_gpu)
 
         m = precomputed_m or compute_feature_matrix(x0, x1, feature_metric)
@@ -47,34 +51,19 @@ class FusedGromovWasserstein:
 
         logger.debug("Backend: %s", ot.backend.get_backend(c0, c1, m, p, q))
 
-        log = {}
-
-        if compute_plan:
-            plan, plan_log = ot.fused_gromov_wasserstein(
-                m,
-                c0,
-                c1,
-                p,
-                q,
-                loss_fun=loss_fun,
-                alpha=alpha,
-                log=True,
-            )
-
-            log["plan"] = plan
-            log["plan_log"] = plan_log
-
         dist = ot.fused_gromov_wasserstein2(
-            m,
-            c0,
-            c1,
-            p,
-            q,
-            loss_fun=loss_fun,
+            M=m,
+            C1=c0,
+            C2=c1,
+            p=p,
+            q=q,
             alpha=alpha,
+            loss_fun=self.config.loss_fun,
+            max_iter=self.config.max_iter,
+            log=self.config.log,
         )
 
         if isinstance(dist, torch.Tensor):
             dist = dist.item()
 
-        return dist, log
+        return dist

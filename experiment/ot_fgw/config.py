@@ -1,13 +1,50 @@
 from dataclasses import dataclass
+from pathlib import Path
+from typing import TypeVar, Type, List, Tuple
+
+import yaml
+
+T = TypeVar('T')
+
+
+def get_config(filepath: str | Path, config_class: Type[T]) -> T:
+    with open(filepath, 'r') as f:
+        data = yaml.safe_load(f)
+    return config_class(**data)
 
 
 @dataclass(slots=True)
 class FGWConfig:
-    """
-    Configuration for FGW computations.
-    """
+    """Configuration for FGW."""
+    max_iter: int
+    log: bool
+    loss_fun: str
 
-    max_iter: int = 50_000
-    batch_size: int = 1000
-    max_ot_samples: int = 4000
-    epsilon: float = 0.1
+
+@dataclass(slots=True)
+class FUGWConfig:
+    """Configuration for FGW."""
+    max_iter: int
+    max_iter_ot: int
+    loss_fun: str
+    divergence: str
+    unbalanced_solver: str
+    epsilon: float
+    log: bool
+
+
+@dataclass
+class FGWSearchConfig:
+    """Configuration for FGW hyperparameter search."""
+    feature_metrics: List[str]
+    structure_metrics: List[str]
+    alphas: List[float]
+
+
+@dataclass
+class FUGWSearchConfig:
+    """Configuration for FUGW hyperparameter search."""
+    feature_metrics: List[str]
+    structure_metrics: List[str]
+    alphas: List[float]
+    reg_marginals: List[int | Tuple[int, int]]

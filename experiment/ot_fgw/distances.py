@@ -10,7 +10,7 @@ from scipy.spatial.distance import euclidean
 logger = logging.getLogger(__name__)
 
 
-def fastdtw_dist(x: list, y: list) -> float:
+def fastdtw_distance(x: list, y: list) -> float:
     """
     Compute Dynamic Time Warping (DTW) distance between two sequences.
 
@@ -31,7 +31,7 @@ def fastdtw_dist(x: list, y: list) -> float:
     return float(distance)
 
 
-def classic_euclid(
+def euclidean_distance(
         x: np.ndarray,
         y: np.ndarray,
         vector_len: int | None = None,
@@ -91,7 +91,7 @@ def vector_norm(x: np.ndarray | list) -> float:
     return float(np.sum(np.linalg.norm(x, axis=1)))
 
 
-def masked_length_awarded(x: np.ndarray | list, y: np.ndarray | list) -> float:
+def masked_length_awarded_distance(x: np.ndarray | list, y: np.ndarray | list) -> float:
     """
     Distance that penalizes sequences of different lengths.
 

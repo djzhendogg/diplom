@@ -1,0 +1,3 @@
+max_iter: 20000
+log: true
+loss_fun: square_loss

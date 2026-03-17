@@ -21,7 +21,7 @@ def seq_to_matrix(sequence: str, descriptors: pd.DataFrame) -> List[np.ndarray]:
     sequence : str
         Amino acid sequence.
     descriptors : pd.DataFrame
-        DataFrame where index contains amino acids and rows contain
+        where index contains amino acids and rows contain
         descriptor vectors.
 
     Returns

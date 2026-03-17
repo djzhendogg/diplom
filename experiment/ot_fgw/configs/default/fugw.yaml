@@ -1,0 +1,7 @@
+max_iter: 10000
+max_iter_ot: 10000
+loss_fun: kl_loss
+divergence: kl
+unbalanced_solver: sinkhorn
+epsilon: 0.1
+log: true
