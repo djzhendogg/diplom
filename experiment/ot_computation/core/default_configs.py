@@ -1,6 +1,6 @@
 from typing import TypeVar
 
-from config import FGWConfig, FUGWConfig, get_config
+from .config import FGWConfig, FUGWConfig, get_config
 
 T = TypeVar('T')
 

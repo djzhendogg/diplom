@@ -1,18 +1,18 @@
 from __future__ import annotations
 
 import logging
-from typing import Sequence
+from typing import Sequence, List
 
 import numpy as np
 import ot
 
-from distances import (
+from .distances import (
     dist_pairwise_matrix,
     dist_matrix,
     fastdtw_distance,
     masked_length_awarded_distance,
 )
-from sequence_process import pad_encoded_sequences
+from .sequence_process import pad_encoded_sequences
 
 logger = logging.getLogger(__name__)
 

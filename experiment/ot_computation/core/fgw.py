@@ -6,10 +6,10 @@ from typing import Sequence, Optional
 import ot
 import torch
 
-from config import FGWConfig
-from default_configs import default_fgw_config
-from matrices import compute_feature_matrix, compute_structure_matrix
-from utils import setup_device, to_tensor, uniform_weights
+from .config import FGWConfig
+from .default_configs import default_fgw_config
+from .matrices import compute_feature_matrix, compute_structure_matrix
+from .utils import setup_device, to_tensor, uniform_weights
 
 logger = logging.getLogger(__name__)
 

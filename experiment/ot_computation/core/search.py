@@ -3,10 +3,10 @@ from __future__ import annotations
 import logging
 from typing import Sequence, Optional
 
-from experiment.ot_fgw.config import FGWSearchConfig, FUGWSearchConfig, FUGWConfig, FGWConfig
-from experiment.ot_fgw.matrices import prepare_different_type_feature_matrix, prepare_different_type_structure_matrix
-from fgw import FusedGromovWasserstein
-from fugw import FusedUnbalancedGromovWasserstein
+from .config import FGWSearchConfig, FUGWSearchConfig, FUGWConfig, FGWConfig
+from .fgw import FusedGromovWasserstein
+from .fugw import FusedUnbalancedGromovWasserstein
+from .matrices import prepare_different_type_feature_matrix, prepare_different_type_structure_matrix
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +16,7 @@ class OTGridSearch:
     Grid search for FGW hyperparameters.
     """
 
-    def __init__(self, fgw_config: Optional[FGWConfig], fugw_config: Optional[FUGWConfig]):
+    def __init__(self, fgw_config: Optional[FGWConfig] = None, fugw_config: Optional[FUGWConfig] = None):
         self.fgw = FusedGromovWasserstein(fgw_config)
         self.fugw = FusedUnbalancedGromovWasserstein(fugw_config)
 
