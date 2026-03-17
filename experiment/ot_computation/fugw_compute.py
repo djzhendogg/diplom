@@ -54,7 +54,7 @@ def main():
     descriptors_path = "./descriptors/aa_descriptors_scaled.csv"
     descriptors = pd.read_csv(descriptors_path, index_col=0)
 
-    files = ['antioxidant.csv', 'hiv_bevirimat.csv', 'cpp_mlcpp.csv', 'cpp_cellppdmod.csv',
+    files = ['umami.csv','antioxidant.csv', 'hiv_bevirimat.csv', 'cpp_mlcpp.csv', 'cpp_cellppdmod.csv',
              'HemoPI3.csv', 'bce_ibce.csv', 'amp_antibp2.csv', 'avp_amppred.csv', 'antioxidant_UniDL4BioPep.csv',
              'anitinflamatory.csv', 'antifungal.csv', 'amp_modlamp.csv', 'toxic.csv', 'afp_antifp.csv',
              'amp_iamp2l.csv', 'ace_inhibitory_activity.csv', 'antiviral.csv', 'nep_neuropipred.csv', 'toxic_PLPTP.csv',
