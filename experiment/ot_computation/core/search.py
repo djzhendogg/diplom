@@ -117,4 +117,5 @@ class OTGridSearch:
                             dist,
                         )
 
+                        results[fm_id][sm_id][str(alpha)][str(reg_marginal)] = dist
         return results
