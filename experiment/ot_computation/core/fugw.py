@@ -19,11 +19,11 @@ class FusedUnbalancedGromovWasserstein:
     Compute fused unbalanced Gromov-Wasserstein distance.
     """
 
-    def __init__(self, config: Optional[FUGWConfig]):
+    def __init__(self, config: Optional[FUGWConfig] = None):
         if config is None:
-            self.config = config
-        else:
             self.config = default_fugw_config()
+        else:
+            self.config = config
 
     def compute(
             self,
@@ -61,7 +61,6 @@ class FusedUnbalancedGromovWasserstein:
             M=m,
             alpha=alpha,
             loss_fun=self.config.loss_fun,
-            log=self.config.log,
             max_iter=self.config.max_iter,
             max_iter_ot=self.config.max_iter_ot,
             divergence=self.config.divergence,

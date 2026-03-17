@@ -111,7 +111,7 @@ def masked_length_awarded_distance(x: np.ndarray | list, y: np.ndarray | list) -
         Distance value.
     """
     if len(x) == len(y):
-        distances = np.linalg.norm(x - y, axis=1)
+        distances = np.linalg.norm(np.array(x) - np.array(y), axis=1)
         distance = float(np.sum(distances))
         logger.debug("Length-aware distance (equal length): %f", distance)
         return distance
@@ -126,7 +126,7 @@ def masked_length_awarded_distance(x: np.ndarray | list, y: np.ndarray | list) -
         x, y = y, x
 
     x_trimmed = x[:min_len]
-    distance_masked = float(np.sum(np.linalg.norm(x_trimmed - y, axis=1)))
+    distance_masked = float(np.sum(np.linalg.norm(np.array(x_trimmed) - np.array(y), axis=1)))
 
     x_left = x[min_len:]
     distance_left = vector_norm(x_left)

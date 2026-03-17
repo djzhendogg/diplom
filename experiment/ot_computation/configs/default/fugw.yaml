@@ -4,4 +4,3 @@ loss_fun: kl_loss
 divergence: kl
 unbalanced_solver: sinkhorn
 epsilon: 0.1
-log: true

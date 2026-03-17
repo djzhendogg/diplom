@@ -46,7 +46,7 @@ class OTGridSearch:
                 pre_c_1 = c_by_type[sm]['1']
 
                 for alpha in config.alphas:
-                    dist, _ = self.fgw.compute(
+                    dist = self.fgw.compute(
                         x0,
                         x1,
                         structure_metric=sm,

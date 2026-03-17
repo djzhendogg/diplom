@@ -19,11 +19,11 @@ class FusedGromovWasserstein:
     Compute Fused Gromov-Wasserstein distance.
     """
 
-    def __init__(self, config: Optional[FGWConfig]):
+    def __init__(self, config: Optional[FGWConfig] = None):
         if config is None:
-            self.config = config
-        else:
             self.config = default_fgw_config()
+        else:
+            self.config = config
 
     def compute(
             self,
@@ -39,9 +39,9 @@ class FusedGromovWasserstein:
     ) -> float:
         device, dtype = setup_device(on_gpu)
 
-        m = precomputed_m or compute_feature_matrix(x0, x1, feature_metric)
-        c0 = precomputed_c0 or compute_structure_matrix(x0, structure_metric)
-        c1 = precomputed_c1 or compute_structure_matrix(x1, structure_metric)
+        m = compute_feature_matrix(x0, x1, feature_metric) if precomputed_m is None else precomputed_m
+        c0 = compute_structure_matrix(x0, structure_metric) if precomputed_c0 is None else precomputed_c0
+        c1 = compute_structure_matrix(x1, structure_metric) if precomputed_c1 is None else precomputed_c1
 
         m = to_tensor(m, device, dtype)
         c0 = to_tensor(c0, device, dtype)
@@ -59,8 +59,7 @@ class FusedGromovWasserstein:
             q=q,
             alpha=alpha,
             loss_fun=self.config.loss_fun,
-            max_iter=self.config.max_iter,
-            log=self.config.log,
+            max_iter=self.config.max_iter
         )
 
         if isinstance(dist, torch.Tensor):
