@@ -28,7 +28,7 @@ def select_non_correlated_features_with_greedy(features, targets, correlation_th
 
     feature_target_corr = feature_target_corr_matrix.mean(axis=1).to_dict()
     sorted_by_importance = sorted(feature_target_corr.items(),
-                                  key=lambda x: x[1],
+                                  key=lambda x: abs(x[1]),
                                   reverse=True)
 
     selected_features = []
