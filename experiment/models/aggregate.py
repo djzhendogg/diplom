@@ -1,21 +1,20 @@
 import os
 
 import pandas as pd
-import yaml
 
 from experiment.analysis_utils.aggregations import flatten_csv_files
 
 raw_path = 'results/raw'
 save_path = 'results'
 
+
 def mean_columns(columns):
     return [col for col in columns if col.endswith("_mean")]
+
 
 def std_columns(columns):
     return [col for col in columns if col.endswith("_std")]
 
-# significant_features_file_name = 'model.csv'
-# uncorrelating_features_file_name = 'problexity_uncorrelating.csv'
 
 full_summary = flatten_csv_files(raw_path)
 mean_cols = mean_columns(full_summary.columns)
