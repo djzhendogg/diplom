@@ -5,8 +5,8 @@ import yaml
 
 from experiment.analysis_utils.plots import pairwise_heatmap
 
-save_path = 'images/pairwise/'
-features_config_path = '../features_config.yaml'
+save_path = "images/pairwise/"
+features_config_path = "../features_config.yaml"
 df_path = "../results/problexity_significant.csv"
 
 with open(features_config_path, 'r') as f:

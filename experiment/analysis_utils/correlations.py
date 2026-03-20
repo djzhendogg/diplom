@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-def cross_correlation(df1, df2, method='pearson'):
+def cross_correlation(df1, df2, method='spearman'):
     result = pd.DataFrame(index=df1.columns, columns=df2.columns)
 
     for col1 in df1.columns:

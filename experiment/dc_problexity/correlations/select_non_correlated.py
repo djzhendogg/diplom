@@ -3,9 +3,12 @@ import yaml
 
 from experiment.analysis_utils.correlations import select_non_correlated_features_with_greedy
 
-features_config_path = '../features_config.yaml'
-targets = pd.read_csv("../../models/results/models_aggregated_mean.csv", index_col='name')
-features = pd.read_csv("../results/problexity_significant.csv", index_col='name')
+features_config_path = "../features_config.yaml"
+models_path = "../../models/results/models_aggregated_mean.csv"
+features_path = "../results/problexity_significant.csv"
+
+targets = pd.read_csv(models_path, index_col='name')
+features = pd.read_csv(features_path, index_col='name')
 features = features.loc[targets.index]
 
 with open(features_config_path, 'r') as f:

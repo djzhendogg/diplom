@@ -20,7 +20,7 @@ class PeptideDataset(Dataset):
 
         # Предварительно обрабатываем все данные
         self.processed_data = []
-        self.targets = []  # переименовано в targets
+        self.targets = []  # переименовано в models
 
         for batch in batches:
             processed_batch, labels = data_processing(batch, monomer_dict, max_len)
@@ -31,7 +31,7 @@ class PeptideDataset(Dataset):
         # Объединяем все обработанные последовательности
         self.processed_data = np.vstack(self.processed_data) if len(self.processed_data) > 1 else self.processed_data[0]
 
-        # Преобразуем targets в тензор
+        # Преобразуем models в тензор
         self.targets = torch.LongTensor(self.targets)
 
         # Уникальные классы
