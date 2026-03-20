@@ -46,5 +46,3 @@ full_summary_std = full_summary[std_cols]
 full_summary_std.set_index('name', inplace=True)
 full_summary_std.sort_index(inplace=True)
 full_summary_std.to_csv(os.path.join(save_path, 'models_full_summary_std.csv'))
-
-print(full_summary.head())
