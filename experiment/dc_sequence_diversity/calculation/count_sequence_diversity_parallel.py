@@ -31,8 +31,8 @@ def process_file(file, path, save_path):
 
 def main():
     # Настройка путей
-    path = "../data"
-    save_path = "./results/"
+    path = "../../data"
+    save_path = "../results/"
 
     # Создание директории для сохранения, если её нет
     os.makedirs(save_path, exist_ok=True)
