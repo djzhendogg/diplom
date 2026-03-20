@@ -8,7 +8,7 @@ raw_path = 'results/raw'
 save_path = 'results'
 features_config_path = 'features_config.yaml'
 
-significant_features_file_name = 'sequence_diversity.csv'
+significant_features_file_name = 'sequence_diversity_significant.csv'
 uncorrelating_features_file_name = 'sequence_diversity_uncorrelating.csv'
 
 df = json_to_flat_df_auto(raw_path)

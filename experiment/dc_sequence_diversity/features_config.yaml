@@ -29,6 +29,7 @@ all:
 - median_unique_trimers_on_all
 - min_unique_trimers_on_all
 - max_unique_trimers_on_all
+correlation_threshold: 0.6
 significant:
 - entropy_levenshtein
 - mean_levenshtein
@@ -54,10 +55,10 @@ significant:
 - max_unique_trimers
 - entropy_unique_trimers_on_all
 uncorrelating:
-- entropy_levenshtein
 - mean_len
-- max_len
-- max_shannon_entropy
-- mean_shannon_entropy
-- mean_unique_trimers
+- entropy_levenshtein
 - entropy_unique_trimers_on_all
+- std_levenshtein
+- min_shannon_entropy
+- entropy_unique_trimers
+- entropy_shannon_entropy

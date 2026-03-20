@@ -8,7 +8,8 @@ raw_path = 'results/raw'
 save_path = 'results'
 features_config_path = 'features_config.yaml'
 
-significant_features_file_name = 'problexity.csv'
+full_features_file_name = 'problexity.csv'
+significant_features_file_name = 'problexity_significant.csv'
 uncorrelating_features_file_name = 'problexity_uncorrelating.csv'
 
 with open(features_config_path, 'r') as f:
@@ -17,6 +18,7 @@ with open(features_config_path, 'r') as f:
 df = json_to_flat_df_auto(raw_path)
 df.set_index(['name'], inplace=True)
 df.sort_index(inplace=True)
+df.to_csv(os.path.join(save_path, full_features_file_name))
 
 df_uncorrelating = df[features['uncorrelating']]
 df_uncorrelating.to_csv(os.path.join(save_path, uncorrelating_features_file_name))

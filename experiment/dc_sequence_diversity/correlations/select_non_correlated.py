@@ -5,7 +5,7 @@ from experiment.analysis_utils.correlations import select_non_correlated_feature
 
 features_config_path = '../features_config.yaml'
 targets = pd.read_csv("../../models/results/models_aggregated_mean.csv", index_col='name')
-features = pd.read_csv("../results/problexity_significant.csv", index_col='name')
+features = pd.read_csv("../results/sequence_diversity_significant.csv", index_col='name')
 features = features.loc[targets.index]
 
 with open(features_config_path, 'r') as f:
