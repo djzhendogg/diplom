@@ -11,8 +11,11 @@ features = features.loc[targets.index]
 with open(features_config_path, 'r') as f:
     config = yaml.safe_load(f)
 
-selected_features, _, _ = select_non_correlated_features_with_greedy(features, targets, correlation_threshold=config[
-    'correlation_threshold'])
+selected_features, _, _ = select_non_correlated_features_with_greedy(
+    features,
+    targets,
+    correlation_threshold=config['correlation_threshold']
+)
 config['uncorrelating'] = selected_features
 
 with open(features_config_path, 'w') as file:

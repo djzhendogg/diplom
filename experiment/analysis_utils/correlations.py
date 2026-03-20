@@ -18,10 +18,7 @@ def cross_correlation(df1, df2, method='pearson'):
 
 def select_non_correlated_features_with_greedy(features, targets, correlation_threshold):
     """
-    Альтернативный подход: жадный алгоритм с учетом корреляции и важности
-
-    На каждом шаге выбирается признак с максимальной средней корреляцией к df2,
-    который не коррелирует сильно с уже выбранными признаками.
+    жадный алгоритм для выбора наиболее релевантных для таргета некоррелирующих признаков
     """
     feature_corr_matrix = features.corr(method='spearman')
     feature_target_corr_matrix = cross_correlation(features, targets, method='spearman')
