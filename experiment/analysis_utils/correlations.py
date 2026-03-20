@@ -1,8 +1,4 @@
-from itertools import combinations
-
-import numpy as np
 import pandas as pd
-from scipy.stats import spearmanr
 
 
 def cross_correlation(df1, df2, method='pearson'):
@@ -20,36 +16,17 @@ def cross_correlation(df1, df2, method='pearson'):
     return result.astype(float)
 
 
-def select_non_correlated_features_with_greedy(df1, df2, correlation_threshold=0.5):
+def select_non_correlated_features_with_greedy(features, targets, correlation_threshold):
     """
     Альтернативный подход: жадный алгоритм с учетом корреляции и важности
 
     На каждом шаге выбирается признак с максимальной средней корреляцией к df2,
     который не коррелирует сильно с уже выбранными признаками.
     """
+    feature_corr_matrix = features.corr(method='spearman')
+    feature_target_corr_matrix = cross_correlation(features, targets, method='spearman')
 
-    features_df1 = df1.columns.tolist()
-    target_cols = df2.columns.tolist()
-
-    feature_corr_matrix = pd.DataFrame(index=features_df1, columns=features_df1)
-
-    for feat1, feat2 in combinations(features_df1, 2):
-        mask = df1[feat1].notna() & df1[feat2].notna()
-        if mask.sum() > 1:
-            corr, _ = spearmanr(df1[feat1][mask], df1[feat2][mask])
-            feature_corr_matrix.loc[feat1, feat2] = abs(corr)
-            feature_corr_matrix.loc[feat2, feat1] = abs(corr)
-
-    feature_target_corr = {}
-    for feat in features_df1:
-        target_corrs = []
-        for target in target_cols:
-            mask = df1[feat].notna() & df2[target].notna()
-            if mask.sum() > 1:
-                corr, _ = spearmanr(df1[feat][mask], df2[target][mask])
-                target_corrs.append(abs(corr))
-        feature_target_corr[feat] = np.mean(target_corrs) if target_corrs else 0
-
+    feature_target_corr = feature_target_corr_matrix.mean(axis=1).to_dict()
     sorted_by_importance = sorted(feature_target_corr.items(),
                                   key=lambda x: x[1],
                                   reverse=True)
