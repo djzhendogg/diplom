@@ -1,55 +1,15 @@
 import json
-import os
-import pandas as pd
 import multiprocessing as mp
+import os
 from functools import partial
 
-from fgw import FusedGromovWassersteinComputer
-from preset_tools_difflen import encode_seqs
-
-
-def process_file(file, path, save_path):
-    """Обработка одного файла"""
-    try:
-        # Чтение и обработка файла
-        df = pd.read_csv(os.path.join(path, file))
-        df_0 = df[df['label'] == 0]
-        df_1 = df[df['label'] == 1]
-
-        X0 = encode_seqs(df_0['sequence'].to_list())
-        X1 = encode_seqs(df_1['sequence'].to_list())
-
-        # Создаем экземпляр компьютера для каждого процесса
-        fgw_computer = FusedGromovWassersteinComputer()
-        dist_res = fgw_computer.compute_fgw_with_search(X0, X1)
-        dist_res['len_0'] = len(X0)
-        dist_res['len_1'] = len(X1)
-
-        # Сохранение результата
-        name = file.split('.')[0]
-        output_path = os.path.join(save_path, f'{name}.json')
-
-        with open(output_path, 'w', encoding='utf-8') as f:
-            json.dump(dist_res, f, ensure_ascii=False, indent=4)
-
-
-        return {
-            'file': file,
-            'status': 'success'
-        }
-
-    except Exception as e:
-        return {
-            'file': file,
-            'status': 'error',
-            'message': str(e),
-        }
+from count_problexity import process_file as cpb
 
 
 def main():
     # Настройка путей
-    path = "./data"
-    save_path = "./ot_result/fgw_par/"
+    path = "../../data"
+    save_path = "../results/raw"
 
     # Создание директории для сохранения, если её нет
     os.makedirs(save_path, exist_ok=True)
@@ -67,16 +27,14 @@ def main():
 
     # Настройка многопроцессорности
     num_processes = mp.cpu_count()  # Используем все доступные ядра
-    if num_processes > 50:
-        num_processes = 50
+    if num_processes > 10:
+        num_processes = 10
     print(f"Используется процессов: {num_processes}")
-
-    # Глобальный таймер
 
     # Создание пула процессов
     with mp.Pool(processes=num_processes) as pool:
         # Частичное применение функции с фиксированными аргументами
-        process_func = partial(process_file, path=path, save_path=save_path)
+        process_func = partial(cpb, path=path, save_path=save_path)
 
         # Асинхронный запуск обработки
         results = []
@@ -84,13 +42,9 @@ def main():
             result = pool.apply_async(process_func, (file,))
             results.append(result)
 
-
         # Сбор всех результатов
         print("\nОжидание завершения всех процессов...")
         final_results = [r.get() for r in results]
-
-    # Финальный отчет
-
 
     # Статистика по ошибкам
     errors = [r for r in final_results if r['status'] == 'error']

@@ -6,23 +6,18 @@ from pathlib import Path
 
 
 def json_to_flat_df_auto(folder_path):
-    """
-    Использует pandas.json_normalize для автоматического разворачивания вложенных структур
-    """
     all_data = []
 
     for json_file in Path(folder_path).glob('*.json'):
+        if json_file.stem == 'errors': continue
         with open(json_file, 'r', encoding='utf-8') as f:
             data = json.load(f)
 
-        # Добавляем имя файла как отдельную колонку
         data['name'] = json_file.name.split('.')[0]
 
-        # Нормализуем JSON (разворачивает вложенные структуры)
         flat_data = pd.json_normalize(data)
         all_data.append(flat_data)
 
-    # Объединяем все DataFrame
     if all_data:
         return pd.concat(all_data, ignore_index=True)
     else:
@@ -41,9 +36,9 @@ def json_to_flat_df_auto(folder_path):
 # print(df_auto.head())
 
 
-# df_auto = json_to_flat_df_auto('ot_result/fgw_par')
+# df_auto = json_to_flat_df_auto('ot_result/fugw_par')
 # df_auto.set_index(['name'], inplace=True)
-# df_auto.to_csv('ot_result/dc_sequence_diversity.csv')
+# df_auto.to_csv('ot_result/fugw_par.csv')
 # print(df_auto.head())
 
 
@@ -88,7 +83,15 @@ def flatten_csv_files(folder_path):
 
 
 # Использование
-df_flattened = flatten_csv_files('models/results')
-df_flattened.to_csv('models/models_results.csv', index=False)
-print(df_flattened.head())
+# df_flattened = flatten_csv_files('models/results')
+# df_flattened.to_csv('models/models_results.csv', index=False)
+# print(df_flattened.head())
 
+
+# df_cut = pd.read_csv('../ot_result/fugw_par_cut.csv')
+# df = pd.read_csv('../ot_result/fugw_par.csv')
+# to_drop = [f for f in df.columns if '(' in f]
+# df.drop(to_drop, axis=1, inplace=True)
+#
+# final_df = pd.concat([df_cut, df])
+# final_df.to_csv('ot_result/fugw.csv')
