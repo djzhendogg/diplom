@@ -50,7 +50,6 @@ def process_file(file, path, save_path, verbose=False):
                 n_jobs=-1
             )
 
-            # Store results
             results.append({
                 'Model': model_name,
                 'MCC_mean': cv_results['test_mcc'].mean(),
@@ -72,7 +71,6 @@ def process_file(file, path, save_path, verbose=False):
             print("\n=== Summary of Results ===")
             print(summary_df.to_string(index=False, float_format="%.3f"))
 
-        # Optionally, save results to CSV
         out_path = os.path.join(save_path, file.split('.')[0] + '.csv')
         summary_df.to_csv(out_path, index=False)
         return {
