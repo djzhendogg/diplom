@@ -1,7 +1,6 @@
 import os
 
 import pandas as pd
-from IPython.core.pylabtools import figsize
 
 from experiment.analysis_utils.correlations import cross_correlation
 from experiment.analysis_utils.plots import target_wise_heatmap
