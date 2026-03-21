@@ -1,25 +1,16 @@
+import os
+
 import numpy as np
 import torch
 from transformers import BertModel, BertTokenizer
 
-from utils import setup_torch_device
+from utils import setup_torch_device, process_data_files
 
 
-def encode_sequences_with_protbert(sequences, model_name=None, batch_size=32):
-    """
-    Encode protein sequences using ProtBERT model with mean pooling.
-
-    Args:
-        sequences: List of protein sequences to encode
-        model_name: Name of the pre-trained ProtBERT model
-        batch_size: Number of sequences to process in each batch
-
-    Returns:
-        numpy.ndarray: Array of sequence embeddings (n_sequences, embedding_dim)
-    """
-
+def protbert_encoding(sequences, model_name=None, batch_size=32):
     # Setup device
-    device = setup_torch_device()
+    # device = setup_torch_device()
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     if model_name is None:
         model_name = "Rostlab/prot_bert"
@@ -38,24 +29,31 @@ def encode_sequences_with_protbert(sequences, model_name=None, batch_size=32):
         for i in range(0, len(processed_sequences), batch_size):
             batch_sequences = processed_sequences[i:i + batch_size]
 
-            inputs = tokenizer(
-                batch_sequences,
-                return_tensors="pt",
-                padding=True,
-                truncation=True,
-                max_length=512
+            encoded = tokenizer(
+                batch_sequences, return_tensors="pt", padding=True
             )
-
-            # Move inputs to device
-            inputs = {key: value.to(device) for key, value in inputs.items()}
+            attention_mask = encoded["attention_mask"].to(device)
+            np.save('attention_mask.npy', attention_mask)
 
             # Forward pass
-            outputs = model(**inputs)
-            last_hidden = outputs.last_hidden_state  # (batch_size, seq_len, hidden_dim)
-
+            outputs = model(**encoded)
+            last_hidden = outputs.last_hidden_state.cpu()  # (batch_size, seq_len, hidden_dim)
+            np.save('last_hidden.npy', last_hidden)
             # Mean pooling: skip special tokens [CLS] and [SEP] (positions 1:-1)
             # Note: This assumes [CLS] is first token and [SEP] is last token
             batch_embeddings = last_hidden[:, 1:-1, :].mean(dim=1).cpu().numpy()
             embeddings.append(batch_embeddings)
 
     return np.vstack(embeddings)
+
+
+def main():
+    embeddings_type = 'protbert'
+    data_path = '../data'
+    files = [f.split('.')[0] for f in os.listdir(data_path)
+             if os.path.isfile(os.path.join(data_path, f)) and f.endswith('.csv')]
+    process_data_files(files, data_path, embeddings_type, protbert_encoding)
+
+
+if __name__ == "__main__":
+    main()
