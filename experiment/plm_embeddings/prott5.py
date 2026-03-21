@@ -29,13 +29,13 @@ def prott5_encoding(sequences, model_name=None, batch_size=16):
             batch_seqs = processed_sequences[i:i + batch_size]
 
             # Токенизация с добавлением паддинга до длины самой длинной последовательности в батче
-            encoded = tokenizer(batch_seqs, add_special_tokens=True, return_tensors="pt", padding="longest")
+            encoded = tokenizer.batch_encode_plus(batch_seqs, add_special_tokens=True, return_tensors="pt", padding="longest")
             input_ids = encoded["input_ids"].to(device)
             attention_mask = encoded["attention_mask"].to(device)
             print("="*30)
             print("ATTENTION MASK")
             print(attention_mask)
-            np.save('attention_mask.npy', attention_mask)
+            np.save('attention_mask_batch_encode_plus.npy', attention_mask)
             print("=" * 30)
             outputs = model(input_ids=input_ids, attention_mask=attention_mask)
             last_hidden = outputs.last_hidden_state  # shape (batch_size, seq_len, hidden_dim)
@@ -43,7 +43,7 @@ def prott5_encoding(sequences, model_name=None, batch_size=16):
             print("lAST HIDDEN")
             print(last_hidden.shape)
             print(last_hidden)
-            np.save('last_hidden.npy', last_hidden)
+            np.save('last_hidden_batch_encode_plus.npy', last_hidden)
             print("=" * 30)
             print("=" * 30)
             print("JUST MEAN lAST HIDDEN")
