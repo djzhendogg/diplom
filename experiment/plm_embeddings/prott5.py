@@ -49,9 +49,7 @@ def prott5_encoding(sequences, model_name=None, batch_size=16):
 
 def main():
     embeddings_type = 'prott5'
-
-    data_path = '../data'
-    files = [os.path.join(data_path, f) for f in ['umami.csv']]
+    files = ['umami.csv']
     # files = [os.path.join(data_path, f) for f in os.listdir(data_path)
     #          if os.path.isfile(os.path.join(data_path, f)) and f.endswith('.csv')]
     process_data_files(files, embeddings_type, prott5_encoding)
