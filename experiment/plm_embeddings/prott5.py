@@ -40,19 +40,26 @@ def prott5_encoding(sequences, model_name=None, batch_size=16):
             last_hidden = outputs.last_hidden_state  # shape (batch_size, seq_len, hidden_dim)
             print("=" * 30)
             print("lAST HIDDEN")
+            print(last_hidden.shape)
             print(last_hidden)
             print("=" * 30)
             print("=" * 30)
             print("JUST MEAN lAST HIDDEN")
+            print(last_hidden.mean(dim=1).shape)
             print(last_hidden.mean(dim=1))
+            np.save('mean_embeddings_no_masked.npy', last_hidden)
             print("=" * 30)
             # Усредняем по длине последовательности для каждого белка
             attention_mask_expanded = attention_mask.unsqueeze(-1).float()
             sum_embeddings = (last_hidden * attention_mask_expanded).sum(dim=1)
             mean_embeddings = sum_embeddings / attention_mask_expanded.sum(dim=1)
+
             print("=" * 30)
             print("MASKED MEAN lAST HIDDEN")
+            print(mean_embeddings.shape)
             print(mean_embeddings)
+            np.save('mean_embeddings_masked.npy', mean_embeddings)
+
             print("=" * 30)
             embeddings.append(mean_embeddings)
 
@@ -63,7 +70,7 @@ def main():
     embeddings_type = 'prott5'
 
     data_path = '../data'
-    files = [os.path.join(data_path, f) for f in ['umami.csv', 'amp_gonzales.csv']]
+    files = [os.path.join(data_path, f) for f in ['umami.csv']]
     # files = [os.path.join(data_path, f) for f in os.listdir(data_path)
     #          if os.path.isfile(os.path.join(data_path, f)) and f.endswith('.csv')]
     process_data_files(files, embeddings_type, prott5_encoding)
