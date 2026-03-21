@@ -56,14 +56,14 @@ def process_data_files(files, embeddings_type, encoding_func):
         except FileNotFoundError as e:
             error = {
                 'file': file,
-                'error': e,
+                'error': str(e),
                 'comment':'Could not find input file'
             }
             errors.append(error)
         except Exception as e:
             error = {
                 'file': file,
-                'error': e,
+                'error': str(e),
                 'comment':'Error during processing'
             }
             errors.append(error)
