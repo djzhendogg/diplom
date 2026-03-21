@@ -1,10 +1,8 @@
-import os
-
 import numpy as np
 import torch
 from transformers import BertModel, BertTokenizer
 
-from utils import setup_torch_device, process_data_files
+from utils import process_data_files
 
 
 def protbert_encoding(sequences, model_name=None, batch_size=32):
@@ -32,17 +30,21 @@ def protbert_encoding(sequences, model_name=None, batch_size=32):
             encoded = tokenizer(
                 batch_sequences, return_tensors="pt", padding=True
             )
-            attention_mask = encoded["attention_mask"].to(device)
-            np.save('attention_mask.npy', attention_mask)
+            encoded = {k: v.to(device) for k, v in encoded.items()}
 
             # Forward pass
             outputs = model(**encoded)
-            last_hidden = outputs.last_hidden_state.cpu()  # (batch_size, seq_len, hidden_dim)
-            np.save('last_hidden.npy', last_hidden)
-            # Mean pooling: skip special tokens [CLS] and [SEP] (positions 1:-1)
-            # Note: This assumes [CLS] is first token and [SEP] is last token
-            batch_embeddings = last_hidden[:, 1:-1, :].mean(dim=1).cpu().numpy()
-            embeddings.append(batch_embeddings)
+            last_hidden = outputs.last_hidden_state.cpu()
+            attention_mask = encoded["attention_mask"].cpu()
+
+            mean_embeddings = []
+            for seq_num in range(len(last_hidden)):
+                seq_len = (attention_mask[seq_num] == 1).sum()
+                seq_emd = last_hidden[seq_num][1:seq_len - 1]
+                seq_emd_mean = seq_emd.mean(dim=0)
+                mean_embeddings.append(seq_emd_mean)
+
+            embeddings.append(mean_embeddings)
 
     return np.vstack(embeddings)
 

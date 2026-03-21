@@ -9,7 +9,8 @@ from utils import setup_torch_device, process_data_files
 
 
 def prott5_encoding(sequences, model_name=None, batch_size=16):
-    device = setup_torch_device()
+    # device = setup_torch_device()
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     if model_name is None:
         model_name = "Rostlab/prot_t5_xl_half_uniref50-enc"
@@ -27,15 +28,14 @@ def prott5_encoding(sequences, model_name=None, batch_size=16):
         for i in range(0, len(processed_sequences), batch_size):
             batch_sequences = processed_sequences[i:i + batch_size]
 
-            # Токенизация с добавлением паддинга до длины самой длинной последовательности в батче
             encoded = tokenizer(batch_sequences, add_special_tokens=True, return_tensors="pt", padding="longest")
-            input_ids = encoded["input_ids"].to(device)
-            attention_mask = encoded["attention_mask"].to(device)
-            outputs = model(input_ids=input_ids, attention_mask=attention_mask)
+            encoded = {k: v.to(device) for k, v in encoded.items()}
+
+            outputs = model(**encoded)
             last_hidden = outputs.last_hidden_state.cpu()  # shape (batch_size, seq_len, hidden_dim)
+            attention_mask = encoded["attention_mask"].cpu()
 
             mean_embeddings = []
-            attention_mask = attention_mask.cpu()
             for seq_num in range(len(last_hidden)):
                 seq_len = (attention_mask[seq_num] == 1).sum()
                 seq_emd = last_hidden[seq_num][:seq_len - 1]
