@@ -43,7 +43,7 @@ def process_data_files(files, embeddings_type, encoding_func):
     errors = []
     for file in files:
         try:
-            data_df = pd.read_csv(os.path.join(data_path, file))[:10]
+            data_df = pd.read_csv(os.path.join(data_path, file + '.csv'))[:10]
 
             output_file = os.path.join(out_path, file + '.pkl')
             save_embeddings(
