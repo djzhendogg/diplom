@@ -25,7 +25,6 @@ def esm_c_encoding(sequences, model_name="esmc_600m"):
 
     config_mean = LogitsConfig(
         sequence=True,
-        return_embeddings=True,
         return_mean_embedding=True,
     )
 
