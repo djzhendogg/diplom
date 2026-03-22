@@ -17,8 +17,8 @@ def esm_c_encoding(sequences, model_name="esmc_600m"):
     Returns:
         numpy.ndarray: Array of sequence embeddings (n_sequences, embedding_dim)
     """
-    device = setup_torch_device()
-    model = ESMC.from_pretrained(model_name).to(device)
+    # device = setup_torch_device()
+    model = ESMC.from_pretrained(model_name).to('cpu')
     model.eval()
 
     config = LogitsConfig(
