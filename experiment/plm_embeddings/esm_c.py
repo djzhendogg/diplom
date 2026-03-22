@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import torch
 from esm.models.esmc import ESMC
@@ -7,18 +9,8 @@ from utils import setup_torch_device, process_data_files
 
 
 def esm_c_encoding(sequences, model_name="esmc_600m"):
-    """
-    Encode protein sequences using ESMC model with mean pooling.
-
-    Args:
-        sequences: List of protein sequences to encode
-        model_name: Name of the pre-trained ESMC model
-
-    Returns:
-        numpy.ndarray: Array of sequence embeddings (n_sequences, embedding_dim)
-    """
-    # device = setup_torch_device()
-    model = ESMC.from_pretrained(model_name).to('cpu')
+    device = setup_torch_device()
+    model = ESMC.from_pretrained(model_name).to(device)
     model.eval()
 
     config = LogitsConfig(
@@ -49,9 +41,8 @@ def main():
     embeddings_type = 'esm_c'
 
     data_path = '../data'
-    files = ['umami']
-    # files = [f.split('.')[0] for f in os.listdir(data_path)
-    #          if os.path.isfile(os.path.join(data_path, f)) and f.endswith('.csv')]
+    files = [f.split('.')[0] for f in os.listdir(data_path)
+             if os.path.isfile(os.path.join(data_path, f)) and f.endswith('.csv')]
     process_data_files(files, data_path, embeddings_type, esm_c_encoding)
 
 

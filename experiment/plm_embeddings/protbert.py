@@ -1,19 +1,18 @@
+import os
+
 import numpy as np
 import torch
 from transformers import BertModel, BertTokenizer
 
-from utils import process_data_files
+from utils import setup_torch_device, process_data_files
 
 
 def protbert_encoding(sequences, model_name=None, batch_size=32):
-    # Setup device
-    # device = setup_torch_device()
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = setup_torch_device()
 
     if model_name is None:
         model_name = "Rostlab/prot_bert"
 
-    # Load model and tokenizer
     tokenizer = BertTokenizer.from_pretrained(model_name, do_lower_case=False)
     model = BertModel.from_pretrained(model_name).to(device)
     model.eval()
@@ -52,9 +51,8 @@ def protbert_encoding(sequences, model_name=None, batch_size=32):
 def main():
     embeddings_type = 'protbert'
     data_path = '../data'
-    files = ['umami']
-    # files = [f.split('.')[0] for f in os.listdir(data_path)
-    #          if os.path.isfile(os.path.join(data_path, f)) and f.endswith('.csv')]
+    files = [f.split('.')[0] for f in os.listdir(data_path)
+             if os.path.isfile(os.path.join(data_path, f)) and f.endswith('.csv')]
     process_data_files(files, data_path, embeddings_type, protbert_encoding)
 
 
