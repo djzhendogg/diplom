@@ -25,6 +25,7 @@ def esm_c_encoding(sequences, model_name="esmc_600m"):
 
     config_mean = LogitsConfig(
         sequence=True,
+        return_embeddings=True,
         return_mean_embedding=True,
     )
 
@@ -52,7 +53,7 @@ def esm_c_encoding(sequences, model_name="esmc_600m"):
                 config_mean
             )
 
-            sequence_embeddings_mean = logits_output_mean.embeddings.cpu().numpy()
+            sequence_embeddings_mean = logits_output_mean.mean_embedding.cpu().numpy()
             np.save(f"sequence_embeddings_mean_{sequence}.npy", sequence_embeddings_mean)
 
             # sequence_embeddings = logits_output.embeddings.squeeze(0)
