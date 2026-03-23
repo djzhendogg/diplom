@@ -54,14 +54,13 @@ def main():
     descriptors_path = "./descriptors/aa_descriptors_scaled.csv"
     descriptors = pd.read_csv(descriptors_path, index_col=0)
 
-    files = ['umami.csv','antioxidant.csv', 'hiv_bevirimat.csv', 'cpp_mlcpp.csv', 'cpp_cellppdmod.csv',
-             'HemoPI3.csv', 'bce_ibce.csv', 'amp_antibp2.csv', 'avp_amppred.csv', 'antioxidant_UniDL4BioPep.csv',
-             'anitinflamatory.csv', 'antifungal.csv', 'amp_modlamp.csv', 'toxic.csv', 'afp_antifp.csv',
-             'amp_iamp2l.csv', 'ace_inhibitory_activity.csv', 'antiviral.csv', 'nep_neuropipred.csv', 'toxic_PLPTP.csv',
-             'Hemo_HAPPENN.csv', 'afp_amppred.csv', 'cpp_cellppd.csv',
-             'anticancer_alternative.csv', 'neuropeptide.csv', 'aip_antiinflam.csv', 'anticancer_main.csv',
-             'pip_pipel.csv', 'hem_hemopi.csv', 'antimicrobial.csv', 'blood_brain_barrier.csv', 'quorum_sensing.csv',
-             'antimicrobial_UniDL4BioPep.csv', 'antibacterial.csv']
+    files = ['antidiabetic.csv', 'tumor_t_cell_antigens.csv', 'atb_antitbp.csv', 'cpp_sanders.csv', 'acp_mlacp.csv',
+       'anti_MRSA.csv', 'hiv_rtv.csv', 'bitter.csv', 'cpp_cppredfl.csv', 'acp_iacp.csv', 'antimalarial_alternative.csv',
+       'hiv_protease.csv', 'amp_csamp.csv', 'hiv_nfv.csv', 'cpp_kelmcpp.csv', 'amp_antibp.csv', 'ace_vaxinpad.csv',
+       'atb_iantitb.csv', 'tce_zhao.csv', 'hiv_apv.csv', 'avp_avppred.csv', 'hiv_v3.csv', 'aip_aippred.csv',
+       'isp_il10pred.csv', 'antimalarial_main.csv', 'cpp_mlcppue.csv', 'acp_anticp.csv', 'HemoPI2.csv',
+       'amp_gonzales.csv', 'hiv_sqv.csv', 'DPPIV_inhibitory_activity.csv', 'hiv_idv.csv', 'antiparasitic.csv',
+       'hiv_lpv.csv', 'HemoPI1.csv', 'amp_fernandes.csv']
 
     # Создание директории для сохранения, если её нет
     os.makedirs(save_path, exist_ok=True)
