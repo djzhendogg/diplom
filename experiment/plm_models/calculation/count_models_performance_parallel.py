@@ -1,6 +1,6 @@
 import json
-import os
 import multiprocessing as mp
+import os
 from functools import partial
 
 from count_models_performance import process_file
@@ -64,12 +64,11 @@ def process_input_path(embedding_type):
     else:
         print("\nОшибок не обнаружено!")
 
+
 def main():
-    # Настройка путей
-    embedding_types = 'esm_c'
+    embedding_types = ['esm_c', 'protbert', 'prott5']
     for embedding_type in embedding_types:
         process_input_path(embedding_type)
-
 
 
 if __name__ == "__main__":
