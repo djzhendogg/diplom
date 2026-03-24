@@ -1,0 +1,2 @@
+/mnt/tank/scratch/edin/miniconda3/envs/dc/lib/python3.12/site-packages/ot/lp/_network_simplex.py:332: UserWarning: numItermax reached before optimality. Try to increase numItermax.
+  result_code_string = check_result(result_code)
