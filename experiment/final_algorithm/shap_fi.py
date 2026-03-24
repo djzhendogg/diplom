@@ -3,7 +3,7 @@ import numpy as np
 import shap
 import matplotlib.pyplot as plt
 
-target_type = 'f1_mean'
+target_type = 'auc_roc_mean'
 
 
 ridge = joblib.load(f'ridge/{target_type}/model.joblib')
