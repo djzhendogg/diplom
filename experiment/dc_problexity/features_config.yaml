@@ -1,21 +1,14 @@
-correlation_threshold: 0.6
+correlation_threshold: 0.8
 significant:
 - complexities.c1
 - complexities.c2
-- complexities.n1
-- complexities.n2
-- complexities.n3
-- complexities.n4
 - complexities.lsc
-- complexities.l1
-- complexities.l2
-- complexities.l3
+- complexities.t1
 - complexities.density
 - complexities.clsCoef
 - complexities.hubs
 uncorrelating:
-- complexities.n1
+- complexities.t1
 - complexities.clsCoef
-- complexities.l1
 - complexities.lsc
 - complexities.c1

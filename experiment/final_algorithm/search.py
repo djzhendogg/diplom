@@ -4,23 +4,28 @@ import pandas as pd
 from experiment.final_algorithm.run_cv_fs_tool import run_fs
 
 models_aggregated_path = "../models/results/models_aggregated_mean.csv"
-features_problexity_path = "../dc_problexity/results/problexity_significant.csv"
-features_sd_path = "../dc_sequence_diversity/results/sequence_diversity_significant.csv"
+features_problexity_path = "../dc_problexity/results/problexity_uncorrelating.csv"
+features_sd_path = "../dc_sequence_diversity/results/sequence_diversity_uncorrelating.csv"
 features_fgw_path = "../ot_computation/results/fgw_small_for_model.csv"
-features_fugw_path = "../ot_computation/results/fugw_69_for_analysis.csv"
+features_fugw_path = "../ot_computation/results/fugw.csv"
 
 models_aggregated_df = pd.read_csv(models_aggregated_path, index_col='name')
+models_aggregated_df.sort_index(ascending=False, inplace=True)
 target_column = models_aggregated_df.columns
 
 features_problexity_df = pd.read_csv(features_problexity_path, index_col='name')
-features_problexity_df.sort_index(ascending=False, inplace=True)
 features_sd_df = pd.read_csv(features_sd_path, index_col='name')
-features_fgw_df = pd.read_csv(features_fgw_path, index_col='name')
-features_fugw_df = pd.read_csv(features_fugw_path, index_col='name')['masked_length_awarded_M.dtw_C.0.5.100']
+features_fgw_df = pd.read_csv(features_fgw_path, index_col='name')['masked_length_awarded_M.dtw_C.0.3']
+features_fugw_df = pd.read_csv(features_fugw_path, index_col='name')[['masked_length_awarded_M.dtw_C.0.5.100', 'dtw_M.ot_C.0.5.100', 'ot_M.ot_C.0.5.100', 'dtw_M.masked_length_awarded_C.0.5.100', 'ot_M.dtw_C.0.5.100']]
+features_problexity_df = features_problexity_df.loc[models_aggregated_df.index]
+features_sd_df = features_sd_df.loc[models_aggregated_df.index]
+features_fgw_df = features_fgw_df.loc[models_aggregated_df.index]
+features_fugw_df = features_fugw_df.loc[models_aggregated_df.index]
+
 
 full_features = pd.concat([features_problexity_df, features_sd_df, features_fgw_df, features_fugw_df], axis=1)
 full_df = pd.concat([full_features, models_aggregated_df], axis=1)
-full_df.drop('antibacterial', inplace=True)
+full_df.to_csv('full_feature_target_df.csv')
 
 targets = full_df[target_column]
 features = full_df.drop(target_column, axis=1)
