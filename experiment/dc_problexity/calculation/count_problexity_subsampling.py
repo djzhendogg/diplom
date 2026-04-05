@@ -6,7 +6,7 @@ import problexity as px
 
 from process_one_hot import process_dataset, one_hot_encode
 
-def process_file_with_subsampling(file, path, save_path, n_runs=20, frac=0.8):
+def process_file_with_subsampling(file, path, save_path, n_runs=100, frac=0.8):
     try:
         df = pd.read_csv(os.path.join(path, file))
 
@@ -28,7 +28,8 @@ def process_file_with_subsampling(file, path, save_path, n_runs=20, frac=0.8):
         def aggregate(values):
             return {
                 "mean": float(np.mean(values)),
-                "std": float(np.std(values))
+                "std": float(np.std(values)),
+                "values": [float(v) for v in values]
             }
 
         # базовые поля
@@ -43,9 +44,10 @@ def process_file_with_subsampling(file, path, save_path, n_runs=20, frac=0.8):
         all_keys = reports[0]['complexities'].keys()
         complexities = {}
 
-        for key in all_keys:
-            values = [r['complexities'][key] for r in reports]
-            complexities[key] = aggregate(values)
+        for key in all_keys :
+            if key in ['lsc',  't1', 'c1', 'clsCoef', 'density']:
+                values = [r['complexities'][key] for r in reports]
+                complexities[key] = aggregate(values)
 
         result["complexities"] = complexities
 

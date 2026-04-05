@@ -31,7 +31,7 @@ def process_file(file, path, save_path):
         }
 
 
-def process_file_with_subsampling(file, path, save_path, n_runs=20, frac=0.8):
+def process_file_with_subsampling(file, path, save_path, n_runs=100, frac=0.8):
     try:
         name = file.split('.')[0]
         df = pd.read_csv(os.path.join(path, file))
@@ -47,7 +47,8 @@ def process_file_with_subsampling(file, path, save_path, n_runs=20, frac=0.8):
         def aggregate(values):
             return {
                 "mean": float(np.mean(values)),
-                "std": float(np.std(values))
+                "std": float(np.std(values)),
+                "values": [float(v) for v in values]
             }
 
         result = {
