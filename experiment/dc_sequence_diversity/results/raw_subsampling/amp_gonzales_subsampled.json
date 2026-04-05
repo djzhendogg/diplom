@@ -1,0 +1,126 @@
+{
+    "name": "amp_gonzales",
+    "n_runs": 2,
+    "sample_fraction": 0.8,
+    "samples_num": 129,
+    "entropy_levenshtein": {
+        "mean": 2.063583769937175,
+        "std": 0.05385852432043703
+    },
+    "mean_levenshtein": {
+        "mean": 30.006315392591198,
+        "std": 0.6825336978037502
+    },
+    "std_levenshtein": {
+        "mean": 11.819961018596896,
+        "std": 0.3796693964940614
+    },
+    "median_levenshtein": {
+        "mean": 29.5,
+        "std": 0.5
+    },
+    "min_levenshtein": {
+        "mean": 0.0,
+        "std": 0.0
+    },
+    "max_levenshtein": {
+        "mean": 67.0,
+        "std": 1.0
+    },
+    "entropy_len": {
+        "mean": 1.8922208972817693,
+        "std": 0.024785024048567528
+    },
+    "mean_len": {
+        "mean": 29.796116504854368,
+        "std": 0.6990291262135919
+    },
+    "std_len": {
+        "mean": 13.052292592400661,
+        "std": 0.32779243962467763
+    },
+    "median_len": {
+        "mean": 25.5,
+        "std": 0.5
+    },
+    "min_len": {
+        "mean": 12.0,
+        "std": 1.0
+    },
+    "max_len": {
+        "mean": 72.0,
+        "std": 0.0
+    },
+    "entropy_shannon_entropy": {
+        "mean": 1.9890885670654663,
+        "std": 0.01838266837095226
+    },
+    "mean_shannon_entropy": {
+        "mean": 3.086568175651344,
+        "std": 0.018926621833883717
+    },
+    "std_shannon_entropy": {
+        "mean": 0.6339598398991402,
+        "std": 0.007213504910296764
+    },
+    "median_shannon_entropy": {
+        "mean": 3.290572735822014,
+        "std": 0.036912046133827925
+    },
+    "min_shannon_entropy": {
+        "mean": 1.4052130476346485,
+        "std": 0.05662515162222603
+    },
+    "max_shannon_entropy": {
+        "mean": 4.0510185154103935,
+        "std": 0.0
+    },
+    "entropy_unique_trimers": {
+        "mean": 1.98986078774051,
+        "std": 0.01880753724787365
+    },
+    "mean_unique_trimers": {
+        "mean": 26.344660194174757,
+        "std": 0.7815533980582536
+    },
+    "std_unique_trimers": {
+        "mean": 13.797146205583854,
+        "std": 0.2234209419620825
+    },
+    "median_unique_trimers": {
+        "mean": 23.5,
+        "std": 0.5
+    },
+    "min_unique_trimers": {
+        "mean": 5.0,
+        "std": 0.0
+    },
+    "max_unique_trimers": {
+        "mean": 70.0,
+        "std": 0.0
+    },
+    "entropy_unique_trimers_on_all": {
+        "mean": 1.5496804731828022,
+        "std": 0.032487801821842854
+    },
+    "mean_unique_trimers_on_all": {
+        "mean": 0.927942328497914,
+        "std": 0.005462714203213814
+    },
+    "std_unique_trimers_on_all": {
+        "mean": 0.15659132754451588,
+        "std": 0.0139474913442625
+    },
+    "median_unique_trimers_on_all": {
+        "mean": 1.0,
+        "std": 0.0
+    },
+    "min_unique_trimers_on_all": {
+        "mean": 0.2631578947368421,
+        "std": 0.0
+    },
+    "max_unique_trimers_on_all": {
+        "mean": 1.0,
+        "std": 0.0
+    }
+}

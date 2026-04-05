@@ -3,6 +3,7 @@ import multiprocessing as mp
 import os
 from functools import partial
 
+import numpy as np
 import pandas as pd
 
 from count_sequence_diversity import general_characterize
@@ -29,10 +30,62 @@ def process_file(file, path, save_path):
             'message': str(e),
         }
 
+
+def process_file_with_subsampling(file, path, save_path, n_runs=20, frac=0.8):
+    try:
+        name = file.split('.')[0]
+        df = pd.read_csv(os.path.join(path, file))
+
+        reports = []
+
+        for i in range(n_runs):
+            sample_df = df.sample(frac=frac, replace=False, random_state=i)
+            report = general_characterize(sample_df, name)
+            reports.append(report)
+
+        # --- агрегирование ---
+        def aggregate(values):
+            return {
+                "mean": float(np.mean(values)),
+                "std": float(np.std(values))
+            }
+
+        result = {
+            "name": name,
+            "n_runs": n_runs,
+            "sample_fraction": frac,
+            "samples_num": int(df.shape[0])
+        }
+
+        # берём все ключи кроме name и samples_num
+        keys = [k for k in reports[0].keys() if k not in ['name', 'samples_num']]
+
+        for key in keys:
+            values = [r[key] for r in reports]
+            result[key] = aggregate(values)
+
+        # сохранить
+        out_path = os.path.join(save_path, name + '_subsampled.json')
+        with open(out_path, 'w', encoding='utf-8') as f:
+            json.dump(result, f, ensure_ascii=False, indent=4)
+
+        return {
+            'file': file,
+            'status': 'success'
+        }
+
+    except Exception as e:
+        return {
+            'file': file,
+            'status': 'error',
+            'message': str(e),
+        }
+
+
 def main():
     # Настройка путей
     path = "../../data"
-    save_path = "../results/"
+    save_path = "../results/raw_subsampling"
 
     # Создание директории для сохранения, если её нет
     os.makedirs(save_path, exist_ok=True)
@@ -50,14 +103,14 @@ def main():
 
     # Настройка многопроцессорности
     num_processes = mp.cpu_count()  # Используем все доступные ядра
-    if num_processes > 10:
-        num_processes = 10
+    if num_processes > 20:
+        num_processes = 20
     print(f"Используется процессов: {num_processes}")
 
     # Создание пула процессов
     with mp.Pool(processes=num_processes) as pool:
         # Частичное применение функции с фиксированными аргументами
-        process_func = partial(process_file, path=path, save_path=save_path)
+        process_func = partial(process_file_with_subsampling, path=path, save_path=save_path)
 
         # Асинхронный запуск обработки
         results = []
@@ -91,3 +144,8 @@ def main():
 
 if __name__ == "__main__":
     main()
+    # file = 'amp_gonzales.csv'
+    # path = "../../data"
+    # save_path = "../results/raw_subsampling"
+    #
+    # process_file_with_subsampling(file, path, save_path, n_runs=2)
