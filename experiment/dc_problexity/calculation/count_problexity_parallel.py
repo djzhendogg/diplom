@@ -3,13 +3,13 @@ import multiprocessing as mp
 import os
 from functools import partial
 
-from count_problexity import process_file as cpb
+from count_problexity_subsampling import process_file_with_subsampling as cpb
 
 
 def main():
     # Настройка путей
     path = "../../data"
-    save_path = "../results/raw"
+    save_path = "../results/raw_subsampling"
 
     # Создание директории для сохранения, если её нет
     os.makedirs(save_path, exist_ok=True)
@@ -27,8 +27,8 @@ def main():
 
     # Настройка многопроцессорности
     num_processes = mp.cpu_count()  # Используем все доступные ядра
-    if num_processes > 10:
-        num_processes = 10
+    if num_processes > 20:
+        num_processes = 20
     print(f"Используется процессов: {num_processes}")
 
     # Создание пула процессов
