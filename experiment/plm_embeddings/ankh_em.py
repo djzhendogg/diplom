@@ -12,7 +12,7 @@ model.to(device=device)
 
 def ankh_encoding_with_attention_mask(sequences, batch_size=32):
     processed_sequences = [list(seq) for seq in sequences]
-    embeddings = []
+    result_embeddings = []
     with torch.no_grad():
         for i in range(0, len(processed_sequences), batch_size):
             batch_sequences = processed_sequences[i:i + batch_size]
@@ -37,13 +37,14 @@ def ankh_encoding_with_attention_mask(sequences, batch_size=32):
                 seq_emd_mean = seq_emd.mean(dim=0)
                 mean_embeddings.append(seq_emd_mean)
 
-            embeddings.append(mean_embeddings)
-    np.save('embeddings_mask.npy', embeddings)
+            result_embeddings.append(mean_embeddings)
+    result_embeddings = np.vstack(result_embeddings)
+    np.save('embeddings_mask.npy', result_embeddings)
 
 
 def ankh_encoding_no_attention_mask(sequences, batch_size=32):
     processed_sequences = [list(seq) for seq in sequences]
-    embeddings = []
+    result_embeddings = []
     with torch.no_grad():
         for i in range(0, len(processed_sequences), batch_size):
             batch_sequences = processed_sequences[i:i + batch_size]
@@ -66,8 +67,9 @@ def ankh_encoding_no_attention_mask(sequences, batch_size=32):
                 seq_emd_mean = seq_emd.mean(dim=0)
                 mean_embeddings.append(seq_emd_mean)
 
-            embeddings.append(mean_embeddings)
-    np.save('embeddings_no_mask.npy', embeddings)
+            result_embeddings.append(mean_embeddings)
+    result_embeddings = np.vstack(result_embeddings)
+    np.save('embeddings_no_mask.npy', result_embeddings)
 
 
 def main():
