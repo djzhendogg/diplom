@@ -6,7 +6,7 @@ import problexity as px
 
 from process_one_hot import process_dataset, one_hot_encode
 
-def process_file_with_subsampling(file, path, save_path, n_runs=100, frac=0.8):
+def process_file_with_subsampling(file, path, save_path, n_runs=50, frac=0.8):
     try:
         df = pd.read_csv(os.path.join(path, file))
 

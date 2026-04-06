@@ -9,7 +9,7 @@ from count_problexity_subsampling import process_file_with_subsampling as cpb
 def main():
     # Настройка путей
     path = "../../data"
-    save_path = "../results/raw_subsampling"
+    save_path = "../results/raw_subsampling_50"
 
     # Создание директории для сохранения, если её нет
     os.makedirs(save_path, exist_ok=True)
