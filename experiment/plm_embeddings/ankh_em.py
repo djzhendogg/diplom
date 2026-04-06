@@ -3,6 +3,7 @@ import os
 import ankh
 import numpy as np
 import torch
+
 from utils import setup_torch_device, process_data_files
 
 device = setup_torch_device()
@@ -27,7 +28,9 @@ def ankh_encoding(sequences, batch_size=32):
             )
             # print(encoded['attention_mask'])
 
-            embeddings = model(input_ids=encoded['input_ids'].to(device), attention_mask=encoded['attention_mask'].to(device))[0].cpu()
+            embeddings = \
+            model(input_ids=encoded['input_ids'].to(device), attention_mask=encoded['attention_mask'].to(device))[
+                0].cpu()
             # print('out emb shape')
             # print(embeddings.shape)
             attention_mask = encoded["attention_mask"].cpu()
@@ -44,16 +47,10 @@ def ankh_encoding(sequences, batch_size=32):
 
 
 def main():
-    # protein_sequences = [
-    #     'MKALCLLL',
-    #     'GSHMS',
-    # ]
-    # ankh_encoding(protein_sequences)
     embeddings_type = 'ankh_em'
     data_path = '../data'
-    # files = [f.split('.')[0] for f in os.listdir(data_path)
-    #          if os.path.isfile(os.path.join(data_path, f)) and f.endswith('.csv')]
-    files = ['amp_gonzales']
+    files = [f.split('.')[0] for f in os.listdir(data_path)
+             if os.path.isfile(os.path.join(data_path, f)) and f.endswith('.csv')]
     process_data_files(files, data_path, embeddings_type, ankh_encoding)
 
 
