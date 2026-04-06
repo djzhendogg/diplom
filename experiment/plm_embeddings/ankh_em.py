@@ -6,7 +6,7 @@ print(dir(ankh))
 model, tokenizer = ankh.load_base_model()
 model.eval()
 
-binary_classification_model = ankh.ConvBERTForBinaryClassification(
+binary_classification_model = ankh.ConvBertForBinaryClassification(
     input_dim=768,
     nhead=4,
     hidden_dim=384,
