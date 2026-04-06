@@ -34,6 +34,7 @@ outputs = tokenizer(
 )
 with torch.no_grad():
     embeddings = model(input_ids=outputs['input_ids'], attention_mask=outputs['attention_mask'])
+    print(dir(embeddings))
     print(embeddings[0].shape)
 
 with torch.no_grad():
