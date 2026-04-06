@@ -66,7 +66,7 @@ def process_input_path(embedding_type):
 
 
 def main():
-    embedding_types = ['esm_c', 'protbert', 'prott5']
+    embedding_types = ['ankh_em']
     for embedding_type in embedding_types:
         process_input_path(embedding_type)
 
