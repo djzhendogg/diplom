@@ -60,3 +60,6 @@ def main():
     ankh_encoding(protein_sequences)
     print('by one')
     embed_dataset(protein_sequences)
+
+if __name__ == "__main__":
+    main()
