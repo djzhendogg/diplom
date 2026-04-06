@@ -3,7 +3,7 @@ import torch
 
 # Load Ankh base.
 print(dir(ankh))
-model, tokenizer = ankh.load_ankh_base()
+model, tokenizer = ankh.load_base_model()
 model.eval()
 
 binary_classification_model = ankh.ConvBERTForBinaryClassification(
