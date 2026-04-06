@@ -2,6 +2,7 @@ import ankh
 import torch
 
 # Load Ankh base.
+print(dir(ankh))
 model, tokenizer = ankh.load_ankh_base()
 model.eval()
 
