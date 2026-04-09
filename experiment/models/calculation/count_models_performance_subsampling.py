@@ -14,7 +14,7 @@ from xgboost import XGBClassifier
 from process_one_hot import process_dataset, one_hot_encode
 
 
-def process_file(file, path, save_path, n_runs=50, frac=0.8):
+def process_file_with_subsampling(file, path, save_path, n_runs=50, frac=0.8):
     try:
         df = pd.read_csv(os.path.join(path, file))
 
@@ -44,13 +44,12 @@ def process_file(file, path, save_path, n_runs=50, frac=0.8):
                 'f1': make_scorer(f1_score)
             }
 
-            model_results =  {
+            model_results = {
                 'mcc': [],
                 'roc_auc': [],
                 'f1': [],
             }
             for model_name, model in models.items():
-
                 cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
                 cv_results = cross_validate(
                     model, X, y,
@@ -83,3 +82,10 @@ def process_file(file, path, save_path, n_runs=50, frac=0.8):
             'status': 'error',
             'message': str(e),
         }
+
+
+if __name__ == "__main__":
+    file = 'amp_gonzales.csv'
+    path = "../../data"
+    save_path = "../results/raw_subsampling"
+    process_file_with_subsampling(file, path, save_path, n_runs=10, frac=0.8)
