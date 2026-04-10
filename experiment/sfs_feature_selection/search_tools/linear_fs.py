@@ -5,8 +5,8 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.tree import DecisionTreeRegressor
 
-from experiment.final_algorithm.run_cv_tool import run_cv
-from experiment.final_algorithm.utils import spearman_scorer
+from experiment.sfs_feature_selection.search_tools.linear_cv import run_cv
+from experiment.sfs_feature_selection.search_tools.sp_scorer import spearman_scorer
 
 
 def run_fs(target_type, regressor_type, x_df, y_df):
@@ -31,5 +31,5 @@ def run_fs(target_type, regressor_type, x_df, y_df):
     sfs = SequentialFeatureSelector(pipeline, direction='backward', scoring=spearman_scorer, cv=cv)
     sfs.fit(X, y)
     features_fs = sfs.get_feature_names_out()
-    spearman_mean, spearman_std = run_cv(("fs features", features_fs), target_type, regressor_type, x_df, y_df)
-    return spearman_mean, spearman_std
+    spearman_mean, spearman_std, r2_mean, r2_std = run_cv(("fs features", features_fs), target_type, regressor_type, x_df, y_df)
+    return spearman_mean, spearman_std, r2_mean, r2_std, features_fs
