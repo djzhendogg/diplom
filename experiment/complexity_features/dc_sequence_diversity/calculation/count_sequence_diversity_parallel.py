@@ -85,7 +85,7 @@ def process_file_with_subsampling(file, path, save_path, n_runs=100, frac=0.8):
 
 def main():
     # Настройка путей
-    path = "../../data"
+    path = "../../../data"
     save_path = "../results/raw_subsampling"
 
     # Создание директории для сохранения, если её нет

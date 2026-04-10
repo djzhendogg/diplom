@@ -5,13 +5,13 @@ import pandas as pd
 from experiment.analysis_utils.correlations import cross_correlation
 from experiment.analysis_utils.plots import target_wise_heatmap
 
-models_aggregated_path = "../../models/results/models_aggregated_mean.csv"
-models_full_summary_path = "../../models/results/models_full_summary_mean.csv"
-features_path = "../results/problexity_uncorrelating.csv"
+models_aggregated_path = "../../../baseline/results/models_aggregated_mean.csv"
+models_full_summary_path = "../../../baseline/results/models_full_summary_mean.csv"
+
+features_path = "../results/sequence_diversity_uncorrelating.csv"
 save_path = "images/models/"
 
 features_df = pd.read_csv(features_path, index_col='name')
-features_df.rename(columns={col: col.split('.')[1] for col in features_df.columns}, inplace=True)
 
 aggregated_targets = pd.read_csv(models_aggregated_path, index_col='name')
 full_summary_targets = pd.read_csv(models_full_summary_path, index_col='name')

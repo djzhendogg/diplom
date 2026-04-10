@@ -2,9 +2,9 @@ import json
 
 import pandas as pd
 
-from experiment.sfs_feature_selection.search_tools.linear_fs import run_fs
+from experiment.complexity_features.sfs_feature_selection.search_tools.linear_fs import run_fs
 
-models_aggregated_path = "../models/results/models_aggregated_mean.csv"
+models_aggregated_path = "../../baseline/results/models_aggregated_mean.csv"
 features_problexity_path = "../dc_problexity/results/problexity_significant.csv"
 features_sd_path = "../dc_sequence_diversity/results/sequence_diversity_significant.csv"
 
