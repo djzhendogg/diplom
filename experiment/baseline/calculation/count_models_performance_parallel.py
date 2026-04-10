@@ -1,20 +1,17 @@
 import json
-import os
 import multiprocessing as mp
+import os
 from functools import partial
 
-from count_models_performance import process_file
+from experiment.baseline.calculation.count_models_performance_subsampling import process_file_with_subsampling
 
 
 def main():
-    # Настройка путей
     path = "../../data"
-    save_path = "../results/"
+    save_path = "../results/raw_subsampling"
 
-    # Создание директории для сохранения, если её нет
     os.makedirs(save_path, exist_ok=True)
 
-    # Получение списка файлов
     files = [f for f in os.listdir(path)
              if os.path.isfile(os.path.join(path, f)) and f.endswith('.csv')]
 
@@ -25,24 +22,19 @@ def main():
     print(f"Найдено {len(files)} файлов для обработки")
     print(f"Сохранение результатов в: {save_path}")
 
-    # Настройка многопроцессорности
-    num_processes = mp.cpu_count()  # Используем все доступные ядра
+    num_processes = mp.cpu_count()
     if num_processes > 10:
         num_processes = 10
     print(f"Используется процессов: {num_processes}")
 
-    # Создание пула процессов
     with mp.Pool(processes=num_processes) as pool:
-        # Частичное применение функции с фиксированными аргументами
-        process_func = partial(process_file, path=path, save_path=save_path)
+        process_func = partial(process_file_with_subsampling, path=path, save_path=save_path)
 
-        # Асинхронный запуск обработки
         results = []
         for i, file in enumerate(files):
             result = pool.apply_async(process_func, (file,))
             results.append(result)
 
-        # Сбор всех результатов
         print("\nОжидание завершения всех процессов...")
         final_results = [r.get() for r in results]
 

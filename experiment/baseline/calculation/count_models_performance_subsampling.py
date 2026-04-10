@@ -14,7 +14,7 @@ from xgboost import XGBClassifier
 from process_one_hot import process_dataset, one_hot_encode
 
 
-def process_file_with_subsampling(file, path, save_path, n_runs=50, frac=0.8):
+def process_file_with_subsampling(file, path, save_path, n_runs=100, frac=0.8):
     try:
         df = pd.read_csv(os.path.join(path, file))
 
@@ -83,9 +83,8 @@ def process_file_with_subsampling(file, path, save_path, n_runs=50, frac=0.8):
             'message': str(e),
         }
 
-
-if __name__ == "__main__":
-    file = 'amp_gonzales.csv'
-    path = "../../data"
-    save_path = "../results/raw_subsampling"
-    process_file_with_subsampling(file, path, save_path, n_runs=10, frac=0.8)
+# if __name__ == "__main__":
+#     file = 'amp_gonzales.csv'
+#     path = "../../data"
+#     save_path = "../results/raw_subsampling"
+#     process_file_with_subsampling(file, path, save_path, n_runs=5, frac=0.8)
