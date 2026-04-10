@@ -3,7 +3,7 @@ import multiprocessing as mp
 import os
 from functools import partial
 
-from experiment.baseline.calculation.count_models_performance_subsampling import process_file_with_subsampling
+from count_models_performance_subsampling import process_file_with_subsampling
 
 
 def main():
