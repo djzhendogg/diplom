@@ -10,6 +10,7 @@ targets = pd.read_csv(models_path, index_col='name')
 features = pd.read_csv(features_path, index_col='name')
 
 not_in_ot = list(set(targets.index) - set(features.index))
+print(not_in_ot)
 targets.drop(not_in_ot, inplace=True)
 features = features.loc[targets.index]
 

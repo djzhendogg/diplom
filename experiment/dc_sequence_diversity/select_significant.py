@@ -7,7 +7,7 @@ features_config_path = 'features_config.yaml'
 df = pd.read_csv('results/sequence_diversity.csv', index_col='name')
 X_scaled = StandardScaler().fit_transform(df)
 df_scaled = pd.DataFrame(X_scaled, columns=df.columns)
-sel = VarianceThreshold(threshold=(.1 * (1 - .1)))
+sel = VarianceThreshold()
 sel.fit(df_scaled)
 significant_variance_features = sel.get_feature_names_out()
 to_drop = set(df.columns) - set(significant_variance_features)

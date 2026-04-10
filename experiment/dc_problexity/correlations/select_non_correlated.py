@@ -14,12 +14,10 @@ features = features.loc[targets.index]
 with open(features_config_path, 'r') as f:
     config = yaml.safe_load(f)
 
-selected_features, _, feature_corr_matrix = select_non_correlated_features_with_greedy(
+selected_features, sorted_by_importance, feature_corr_matrix = select_non_correlated_features_with_greedy(
     features,
-    targets,
+    targets['mcc_mean'].to_frame(),
     correlation_threshold=config['correlation_threshold']
 )
 config['uncorrelating'] = selected_features
-
-with open(features_config_path, 'w') as file:
-    yaml.dump(config, file)
+print(sorted_by_importance)
