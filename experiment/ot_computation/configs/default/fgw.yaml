@@ -1,2 +1,0 @@
-max_iter: 20000
-loss_fun: square_loss
