@@ -84,8 +84,17 @@ def process_file_with_subsampling(file, path, save_path, n_runs=100, frac=0.8):
         }
 
 
-# if __name__ == "__main__":
-#     file = 'amp_gonzales.csv'
-#     path = "../../data"
-#     save_path = "../results/raw_subsampling"
-#     process_file_with_subsampling(file, path, save_path, n_runs=5, frac=0.8)
+if __name__ == "__main__":
+    path = "../../data"
+    save_path = "../results/raw_subsampling"
+
+    os.makedirs(save_path, exist_ok=True)
+
+    files = [f for f in os.listdir(path)
+             if os.path.isfile(os.path.join(path, f)) and f.endswith('.csv')]
+
+    for file in files:
+        print(f"Обработка файла: {file}")
+        result = process_file_with_subsampling(file, path, save_path)
+        if result['status'] == 'error':
+            print(f"Ошибка в {file}: {result['message']}")
