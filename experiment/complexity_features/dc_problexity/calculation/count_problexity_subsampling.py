@@ -45,7 +45,7 @@ def process_file_with_subsampling(file, path, save_path, n_runs=50, frac=0.8):
         complexities = {}
 
         for key in all_keys :
-            if key in ['lsc',  't1', 'c1', 'clsCoef', 'density']:
+            if key in ['lsc',  't1', 'c1', 'clsCoef', 'density', 'c2']:
                 values = [r['complexities'][key] for r in reports]
                 complexities[key] = aggregate(values)
 
