@@ -42,8 +42,10 @@ def main():
     path = "../results/raw_subsampling"
 
     cv_data = collect_features_cv(path)
-    cv_data.to_csv('problex_cv_data.csv')
+    cv_data.to_csv('problexity_cv_data.csv')
 
+    aggregated = cv_data.groupby('metric')[['mean', 'std', 'cv']].mean().reset_index()
+    aggregated.to_csv("aggregate_problexity_cv.csv", index=False)
 
 if __name__ == "__main__":
     main()

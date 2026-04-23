@@ -48,6 +48,9 @@ def main():
     cv_data = collect_features_cv(path)
     cv_data.to_csv('sd_cv_data.csv')
 
+    aggregated = cv_data.groupby('metric')[['mean', 'std', 'cv']].mean().reset_index()
+    aggregated.to_csv("aggregate_sd_cv.csv", index=False)
+
 
 if __name__ == "__main__":
     main()
