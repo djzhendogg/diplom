@@ -6,7 +6,7 @@ import problexity as px
 
 from process_one_hot import process_dataset, one_hot_encode
 
-def process_file_with_subsampling(file, path, save_path, n_runs=50, frac=0.8):
+def process_file_with_subsampling(file, path, save_path, n_runs=100, frac=0.8):
     try:
         df = pd.read_csv(os.path.join(path, file))
 
@@ -32,7 +32,6 @@ def process_file_with_subsampling(file, path, save_path, n_runs=50, frac=0.8):
                 "values": [float(v) for v in values]
             }
 
-        # базовые поля
         result = {
             "n_runs": n_runs,
             "sample_fraction": frac,
@@ -40,7 +39,6 @@ def process_file_with_subsampling(file, path, save_path, n_runs=50, frac=0.8):
             "n_features": int(X.shape[1]),
         }
 
-        # complexities
         all_keys = reports[0]['complexities'].keys()
         complexities = {}
 
@@ -51,7 +49,6 @@ def process_file_with_subsampling(file, path, save_path, n_runs=50, frac=0.8):
 
         result["complexities"] = complexities
 
-        # сохранить
         out_path = os.path.join(save_path, file.split('.')[0] + '_subsampled.json')
         with open(out_path, 'w', encoding='utf-8') as f:
             json.dump(result, f, ensure_ascii=False, indent=4)
