@@ -48,7 +48,7 @@ def ankh_encoding(sequences, batch_size=32):
 
 def main():
     embeddings_type = 'ankh_em'
-    data_path = '../../data'
+    data_path = '../../../data'
     files = [f.split('.')[0] for f in os.listdir(data_path)
              if os.path.isfile(os.path.join(data_path, f)) and f.endswith('.csv')]
     process_data_files(files, data_path, embeddings_type, ankh_encoding)

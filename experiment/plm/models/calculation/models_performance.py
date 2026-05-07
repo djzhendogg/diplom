@@ -11,6 +11,8 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 from xgboost import XGBClassifier
 
+from experiment.utils.runner import run_processing
+
 
 def process_file(file, path, save_path, verbose=False):
     try:
@@ -83,3 +85,15 @@ def process_file(file, path, save_path, verbose=False):
             'status': 'error',
             'message': str(e),
         }
+
+
+if __name__ == "__main__":
+    embedding_types = ['ankh_em', 'esm_c', 'protbert', 'prott5']
+    for embedding_type in embedding_types:
+        run_processing(
+            path=f"../../plm_embeddings/results/{embedding_type}",
+            save_path=f"../results/{embedding_type}",
+            process_func=process_file,
+            max_processes=20,
+            file_extension=".pkl"
+        )

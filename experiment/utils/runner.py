@@ -1,26 +1,17 @@
-import os
 import json
 import multiprocessing as mp
+import os
 from functools import partial
 
 
 def run_processing(
-    path,
-    save_path,
-    process_func,
-    max_processes=10,
-    process_kwargs=None
+        path,
+        save_path,
+        process_func,
+        max_processes=10,
+        process_kwargs=None,
+        file_extension=".csv"
 ):
-    """
-    Универсальный раннер для обработки CSV файлов.
-
-    :param path: путь к папке с CSV
-    :param save_path: куда сохранять результаты
-    :param process_func: функция обработки одного файла
-    :param max_processes: максимум процессов
-    :param process_kwargs: дополнительные аргументы для process_func
-    """
-
     if process_kwargs is None:
         process_kwargs = {}
 
@@ -28,7 +19,7 @@ def run_processing(
 
     files = [
         f for f in os.listdir(path)
-        if os.path.isfile(os.path.join(path, f)) and f.endswith('.csv')
+        if os.path.isfile(os.path.join(path, f)) and f.endswith(file_extension)
     ]
 
     if not files:

@@ -56,8 +56,8 @@ def aggregate(plm_type: str, raw_path: str, save_path: str):
 
 if __name__ == '__main__':
     plm_types = ['ankh_em', 'esm_c', 'prott5', 'protbert']
-    save_path = 'results'
+    save_path = '../results'
 
     for plm_type in plm_types:
-        raw_path = f'results/{plm_type}'
+        raw_path = f'../results/{plm_type}'
         aggregate(plm_type, raw_path, save_path)

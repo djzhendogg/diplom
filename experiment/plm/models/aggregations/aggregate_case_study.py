@@ -10,8 +10,8 @@ def load_and_sort(path: str) -> pd.DataFrame:
 
 
 def load_model_results(model_name: str):
-    mean = load_and_sort(f'results/aggregated_mean/{model_name}.csv')
-    max_ = load_and_sort(f'results/aggregated_max/{model_name}.csv')
+    mean = load_and_sort(f'../results/aggregated_mean/{model_name}.csv')
+    max_ = load_and_sort(f'../results/aggregated_max/{model_name}.csv')
     return mean, max_
 
 
@@ -39,4 +39,4 @@ if __name__ == "__main__":
     rankings = build_rankings(models, METRICS)
 
     for metric, df in rankings.items():
-        df.to_csv(f'results/case_study/{metric}_for_case_st.csv')
+        df.to_csv(f'../results/case_study/{metric}_for_case_st.csv')

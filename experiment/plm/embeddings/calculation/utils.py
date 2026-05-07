@@ -35,7 +35,7 @@ def save_embeddings(
     result_df.to_pickle(output_path)
 
 
-def process_data_files(files, data_path, embeddings_type, encoding_func, save_path = 'results'):
+def process_data_files(files, data_path, embeddings_type, encoding_func, save_path = '../results'):
     out_path = os.path.join(save_path, embeddings_type)
 
     errors = []
