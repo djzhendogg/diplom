@@ -11,7 +11,8 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 from xgboost import XGBClassifier
 
-from process_one_hot import process_dataset, one_hot_encode
+from experiment.utils.process_one_hot import process_dataset, one_hot_encode
+from experiment.utils.runner import run_processing
 
 
 def process_file_with_subsampling(file, path, save_path, n_runs=100, frac=0.8):
@@ -85,16 +86,9 @@ def process_file_with_subsampling(file, path, save_path, n_runs=100, frac=0.8):
 
 
 if __name__ == "__main__":
-    path = "../../data"
-    save_path = "../results/raw_subsampling"
-
-    os.makedirs(save_path, exist_ok=True)
-
-    files = [f for f in os.listdir(path)
-             if os.path.isfile(os.path.join(path, f)) and f.endswith('.csv')]
-
-    for file in files:
-        print(f"Обработка файла: {file}")
-        result = process_file_with_subsampling(file, path, save_path)
-        if result['status'] == 'error':
-            print(f"Ошибка в {file}: {result['message']}")
+    run_processing(
+        path="../../data",
+        save_path="../results/raw_subsampling",
+        process_func=process_file_with_subsampling,
+        max_processes=10
+    )

@@ -9,7 +9,8 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 from xgboost import XGBClassifier
 
-from process_one_hot import process_dataset, one_hot_encode
+from experiment.utils.runner import run_processing
+from experiment.utils.process_one_hot import process_dataset, one_hot_encode
 
 
 def process_file(file, path, save_path, verbose=False):
@@ -18,7 +19,6 @@ def process_file(file, path, save_path, verbose=False):
 
         one_hot_df = process_dataset(df, one_hot_encode, pad_value=0)
 
-        # Prepare features and target
         feature_columns = [col for col in one_hot_df.columns if col not in ['sequence', 'label']]
         X = one_hot_df[feature_columns].values
         y = one_hot_df['label'].values
@@ -84,3 +84,12 @@ def process_file(file, path, save_path, verbose=False):
             'status': 'error',
             'message': str(e),
         }
+
+
+if __name__ == "__main__":
+    run_processing(
+        path="../../data",
+        save_path="../results/raw",
+        process_func=process_file,
+        max_processes=10
+    )

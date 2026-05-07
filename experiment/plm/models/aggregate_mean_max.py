@@ -2,7 +2,7 @@ import os
 
 import pandas as pd
 
-from experiment.analysis_utils.aggregations import flatten_csv_files
+from experiment.utils.aggregations import flatten_csv_files
 
 
 def mean_columns(columns):

@@ -3,11 +3,6 @@ from Levenshtein import distance
 from scipy.stats import entropy
 from seqshannon import shannon_entropy
 
-from levenshtein_distance_tools import (
-    build_histograms_from_distance_matrix,
-    compute_global_H_from_mixture
-)
-
 
 def general_characterize(df, name):
     levenshtein_distances_matrix = levenshtein_distances(df['sequence'].to_list())
@@ -58,11 +53,11 @@ def general_characterize(df, name):
         "samples_num": df.shape[0],
 
         "entropy_levenshtein": entropy_levenshtein,
-        "mean_levenshtein":mean_levenshtein,
-        "std_levenshtein":std_levenshtein,
-        "median_levenshtein":median_levenshtein,
-        "min_levenshtein":min_levenshtein,
-        "max_levenshtein":max_levenshtein,
+        "mean_levenshtein": mean_levenshtein,
+        "std_levenshtein": std_levenshtein,
+        "median_levenshtein": median_levenshtein,
+        "min_levenshtein": min_levenshtein,
+        "max_levenshtein": max_levenshtein,
 
         "entropy_len": entropy_len,
         "mean_len": mean_len,
@@ -92,6 +87,81 @@ def general_characterize(df, name):
         "min_unique_trimers_on_all": min_unique_trimers_on_all,
         "max_unique_trimers_on_all": max_unique_trimers_on_all,
     }
+
+
+def build_histograms_from_distance_matrix(D, n_bins=None, bin_edges=None, alpha=1e-12):
+    N = D.shape[0]
+    assert D.shape[0] == D.shape[1], "D must be square"
+    other_mask = ~np.eye(N, dtype=bool)
+    rows = [D[i, other_mask[i]] for i in range(N)]
+
+    rows_arr = np.stack(rows, axis=0)
+
+    all_vals = rows_arr.ravel()
+
+    if bin_edges is None:
+        if n_bins is None:
+            uniq = np.unique(all_vals)
+            if np.all(np.floor(uniq) == uniq):
+                edges = np.concatenate([uniq - 0.5, [uniq[-1] + 0.5]])
+            else:
+                edges = np.histogram_bin_edges(all_vals, bins='auto')
+        else:
+            edges = np.histogram_bin_edges(all_vals, bins=n_bins)
+    else:
+        edges = np.asarray(bin_edges)
+
+    K = len(edges) - 1
+
+    inds = np.digitize(rows_arr, bins=edges) - 1
+    inds = np.clip(inds, 0, K - 1)
+
+    counts = np.zeros((N, K), dtype=float)
+    rows_idx = np.repeat(np.arange(N), inds.shape[1])
+    cols_idx = inds.ravel()
+    np.add.at(counts, (rows_idx, cols_idx), 1)
+
+    counts += alpha
+    row_sums = counts.sum(axis=1, keepdims=True)
+    p_i = counts / row_sums
+
+    p = p_i.mean(axis=0)
+    p = p / p.sum()
+    return p_i, p, edges
+
+
+def entropy_from_prob_vector(p_vec, base=np.e):
+    """Shannon entropy of a probability vector p_vec (natural log default)."""
+    p = np.asarray(p_vec, dtype=float)
+    mask = p > 0
+    return - np.sum(p[mask] * np.log(p[mask])) / (np.log(base) if base != np.e else 1.0)
+
+
+def compute_Hi_and_KLi(p_i, p_global, apply_miller_madow=False, n_obs_per_row=50):
+    N, K = p_i.shape
+    H_i = np.zeros(N, dtype=float)
+    KL_i = np.zeros(N, dtype=float)
+    for i in range(N):
+        pi = p_i[i]
+
+        H = entropy_from_prob_vector(pi)
+
+        if apply_miller_madow:
+            if n_obs_per_row is None:
+                n = (pi.sum() * 0) + 1
+            else:
+                n = n_obs_per_row
+            K_pos = np.count_nonzero(pi > 0)
+            H += (K_pos - 1) / (2.0 * n)
+        H_i[i] = H
+
+        mask = (pi > 0) & (p_global > 0)
+        KL_i[i] = np.sum(pi[mask] * (np.log(pi[mask]) - np.log(p_global[mask])))
+    return H_i, KL_i
+
+
+def compute_global_H_from_mixture(p_global):
+    return entropy_from_prob_vector(p_global)
 
 
 def full_dataset_metrics(df):
@@ -150,6 +220,7 @@ def optimal_bins_fd(values):
     bin_width = 2 * iqr / (n ** (1 / 3))
     bins = int((values.max() - values.min()) / bin_width)
     return max(10, min(100, bins))
+
 
 def count_trimers(sequence):
     if len(sequence) < 3:

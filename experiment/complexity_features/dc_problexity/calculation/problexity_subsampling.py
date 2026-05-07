@@ -1,10 +1,13 @@
+import json
+import os
+
 import numpy as np
 import pandas as pd
-import os
-import json
 import problexity as px
 
-from process_one_hot import process_dataset, one_hot_encode
+from experiment.utils.process_one_hot import process_dataset, one_hot_encode
+from experiment.utils.runner import run_processing
+
 
 def process_file_with_subsampling(file, path, save_path, n_runs=100, frac=0.8):
     try:
@@ -42,8 +45,8 @@ def process_file_with_subsampling(file, path, save_path, n_runs=100, frac=0.8):
         all_keys = reports[0]['complexities'].keys()
         complexities = {}
 
-        for key in all_keys :
-            if key in ['lsc',  't1', 'c1', 'clsCoef', 'density', 'c2']:
+        for key in all_keys:
+            if key in ['lsc', 't1', 'c1', 'clsCoef', 'density', 'c2']:
                 values = [r['complexities'][key] for r in reports]
                 complexities[key] = aggregate(values)
 
@@ -62,8 +65,11 @@ def process_file_with_subsampling(file, path, save_path, n_runs=100, frac=0.8):
             'message': str(e),
         }
 
-# if __name__ == "__main__":
-    # file = 'amp_gonzales.csv'
-    # path = "../../data"
-    # save_path = "../results/raw_subsampling"
-    # process_file_with_subsampling(file, path, save_path, n_runs=2, frac=0.8)
+
+if __name__ == "__main__":
+    run_processing(
+        path="../../data",
+        save_path="../results/raw_subsampling",
+        process_func=process_file_with_subsampling,
+        max_processes=10
+    )

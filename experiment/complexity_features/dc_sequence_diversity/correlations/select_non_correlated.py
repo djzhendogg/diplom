@@ -1,7 +1,7 @@
 import pandas as pd
 import yaml
 
-from experiment.analysis_utils.correlations import select_non_correlated_features_with_greedy
+from experiment.utils.correlations import select_non_correlated_features_with_greedy
 
 features_config_path = '../features_config.yaml'
 models_path = "../../../baseline/results/models_aggregated_mean.csv"

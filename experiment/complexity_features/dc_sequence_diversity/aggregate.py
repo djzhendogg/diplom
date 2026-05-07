@@ -2,7 +2,7 @@ import os
 
 import yaml
 
-from experiment.analysis_utils.aggregations import json_to_flat_df_auto
+from experiment.utils.aggregations import json_to_flat_df_auto
 
 raw_path = 'results/raw'
 save_path = 'results'

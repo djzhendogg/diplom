@@ -4,7 +4,8 @@ import os
 import pandas as pd
 import problexity as px
 
-from process_one_hot import process_dataset, one_hot_encode
+from experiment.utils.process_one_hot import process_dataset, one_hot_encode
+from experiment.utils.runner import run_processing
 
 
 def process_file(file, path, save_path):
@@ -36,3 +37,12 @@ def process_file(file, path, save_path):
             'status': 'error',
             'message': str(e),
         }
+
+
+if __name__ == "__main__":
+    run_processing(
+        path="../../data",
+        save_path="../results/raw",
+        process_func=process_file,
+        max_processes=10
+    )

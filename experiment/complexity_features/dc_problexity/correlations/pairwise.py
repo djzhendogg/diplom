@@ -3,7 +3,7 @@ import os
 import pandas as pd
 import yaml
 
-from experiment.analysis_utils.plots import pairwise_heatmap
+from experiment.utils.plots import pairwise_heatmap
 
 save_path = "images/pairwise/"
 features_config_path = "../features_config.yaml"

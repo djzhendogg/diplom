@@ -2,8 +2,8 @@ import os
 
 import pandas as pd
 
-from experiment.analysis_utils.correlations import cross_correlation
-from experiment.analysis_utils.plots import target_wise_heatmap
+from experiment.utils.correlations import cross_correlation
+from experiment.utils.plots import target_wise_heatmap
 
 models_aggregated_path = "../../../baseline/results/models_aggregated_mean.csv"
 models_full_summary_path = "../../../baseline/results/models_full_summary_mean.csv"
