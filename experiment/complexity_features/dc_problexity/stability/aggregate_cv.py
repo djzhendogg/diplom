@@ -44,7 +44,57 @@ def main():
     cv_data = collect_features_cv(path)
     cv_data.to_csv('problexity_cv_data.csv')
 
+
     aggregated = cv_data.groupby('metric')[['mean', 'std', 'cv']].mean().reset_index()
+    short_map = {
+        'complexities.c1': 'C1', 'complexities.c2': 'C2',
+        'complexities.t1': 'T1', 'complexities.density': 'Density', 'complexities.clsCoef': 'ClsCoef',
+        'mean_levenshtein': 'LevMean',
+        'std_levenshtein': 'LevStd',
+        'entropy_len': 'LenEntr',
+        'std_len': 'LenStd',
+        'min_len': 'MinLen',
+        'mean_shannon_entropy': 'ShEntrMean',
+        'std_shannon_entropy': 'ShEntrStd',
+        'median_shannon_entropy': 'ShEntrMed',
+        'entropy_unique_trimers': 'TriEntr',
+        'std_unique_trimers': 'TriStd',
+        'median_unique_trimers': 'TriMed',
+        'max_unique_trimers': 'TriMax',
+        'entropy_unique_trimers_on_all': 'NTriEntr',
+    }
+
+    # Добавляем недостающие метрики (которых нет в мапе, но есть в данных)
+    # По аналогии с существующими сокращениями
+    additional_mappings = {
+        'median_unique_trimers_on_all': 'TriMedAll',  # по аналогии с TriMed и NTriEntr
+        # Если появятся другие метрики, добавьте их сюда
+    }
+
+    # Объединяем мапы
+    full_short_map = {**short_map, **additional_mappings}
+
+    # Функция для переименования
+    def rename_metric(metric_name):
+        if metric_name in full_short_map:
+            return full_short_map[metric_name]
+        else:
+            # Если метрики нет в мапе, создаем сокращение по аналогии:
+            # берем первые буквы слов или первые 2-3 буквы
+            parts = metric_name.split('_')
+            if len(parts) == 1:
+                # Одно слово - берем первые 3-4 буквы
+                return metric_name[:4].capitalize()
+            else:
+                # Несколько слов - берем первые буквы
+                return ''.join([p[:2].capitalize() for p in parts])
+
+    # Применяем переименование к агрегированной таблице
+    aggregated['metric'] = aggregated['metric'].apply(rename_metric)
+
+    # Сортируем по новым названиям для удобства
+    aggregated = aggregated.sort_values('metric').reset_index(drop=True)
+
     aggregated.to_csv("aggregate_problexity_cv.csv", index=False)
 
 if __name__ == "__main__":
