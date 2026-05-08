@@ -5,6 +5,12 @@
     "t1": "T1",
     "density": "density",
     "clsCoef": "clsCoef",
-    "lsc": "LSC"
+    "lsc": "LSC",
+    "complexities.c1": "C1",
+    "complexities.c2": "C2",
+    "complexities.t1": "T1",
+    "complexities.density": "density",
+    "complexities.clsCoef": "clsCoef",
+    "complexities.lsc": "LSC"
   }
 }
