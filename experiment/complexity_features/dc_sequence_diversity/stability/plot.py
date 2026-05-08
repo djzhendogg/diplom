@@ -79,4 +79,4 @@ def boxplot_pivot_cv_split(df, save=False, save_path=None, n_cols=2, n_rows=2):
 if __name__ == "__main__":
     df = pd.read_csv("./results/data_feature_full.csv")
 
-    boxplot_pivot_cv_split(df, n_cols=1, n_rows=5, save=True, save_path="./results/boxplot_pivot_cv_split.png")
+    boxplot_pivot_cv_split(df, n_cols=1, n_rows=5, save=True, save_path="results/sd_cv.png")
