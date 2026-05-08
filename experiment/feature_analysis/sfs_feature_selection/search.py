@@ -27,14 +27,14 @@ features = full_df.drop(target_column, axis=1)
 full_results = []
 for target_type in ['mcc_mean', 'f1_mean', 'auc_roc_mean']:
     for reg_type in ['lasso', 'linear', 'ridge']:
-        spearman_score, spearman_std, _, _, features_fs = run_fs(target_type, reg_type, features, targets)
+        fs_results = run_fs(target_type, reg_type, features, targets)
 
         rr = {
             'model': reg_type,
             'targets': target_type,
-            'spearman_mean': float(spearman_score),
-            'spearman_std': float(spearman_std),
-            'features_fs': list(features_fs)
+            'spearman_mean': float(fs_results['spearman_mean']),
+            'spearman_std': float(fs_results['spearman_std']),
+            'features_fs': list(fs_results['features_per_fold'])
         }
 
         full_results.append(rr)
