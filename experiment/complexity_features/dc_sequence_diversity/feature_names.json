@@ -4,6 +4,7 @@
     "mean_levenshtein": "LevMean",
     "std_levenshtein": "LevStd",
     "median_levenshtein": "LevMed",
+    "min_levenshtein": "LevMin",
     "max_levenshtein": "LevMax",
     "entropy_len": "LenEntr",
     "mean_len": "LenMean",
@@ -27,6 +28,7 @@
     "mean_unique_trimers_on_all": "NTriMean",
     "std_unique_trimers_on_all": "NTriStd",
     "median_unique_trimers_on_all": "NTriMed",
-    "min_unique_trimers_on_all": "NTriMin"
+    "min_unique_trimers_on_all": "NTriMin",
+    "max_unique_trimers_on_all": "NTriMax"
   }
 }
