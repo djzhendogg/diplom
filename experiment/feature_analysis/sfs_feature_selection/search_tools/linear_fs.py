@@ -5,8 +5,8 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.tree import DecisionTreeRegressor
 
-from experiment.complexity_features.sfs_feature_selection.search_tools.linear_cv import run_cv
-from experiment.complexity_features.sfs_feature_selection.search_tools.sp_scorer import spearman_scorer
+from experiment.feature_analysis.sfs_feature_selection.search_tools.linear_cv import run_cv
+from experiment.feature_analysis.sfs_feature_selection.search_tools.sp_scorer import spearman_scorer
 
 
 def run_fs(target_type, regressor_type, x_df, y_df):

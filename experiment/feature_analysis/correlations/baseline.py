@@ -65,5 +65,5 @@ if __name__ == "__main__":
     mcc_corr_mat['abs_correlation'] = mcc_corr_mat['mcc_mean'].abs()
     df_sorted = mcc_corr_mat.sort_values('abs_correlation', ascending=False).reset_index(drop=True)
 
-    df_top10 = df_sorted[:15]
-    barplot(df_top10, True, save_path='results/feature_baseline_corr_top15.png')
+    df_top10 = df_sorted
+    barplot(df_top10, True, save_path='results/feature_baseline_corr.png')
