@@ -1,0 +1,32 @@
+{
+  "names": {
+    "entropy_levenshtein": "LevEntr",
+    "mean_levenshtein": "LevMean",
+    "std_levenshtein": "LevStd",
+    "median_levenshtein": "LevMed",
+    "max_levenshtein": "LevMax",
+    "entropy_len": "LenEntr",
+    "mean_len": "LenMean",
+    "std_len": "LenStd",
+    "median_len": "LenMed",
+    "min_len": "LenMin",
+    "max_len": "LenMax",
+    "entropy_shannon_entropy": "ShEntrEntr",
+    "mean_shannon_entropy": "ShEntrMean",
+    "std_shannon_entropy": "ShEntrStd",
+    "median_shannon_entropy": "ShEntrMed",
+    "min_shannon_entropy": "ShEntrMin",
+    "max_shannon_entropy": "ShEntrMax",
+    "entropy_unique_trimers": "TriEntr",
+    "mean_unique_trimers": "TriMean",
+    "std_unique_trimers": "TriStd",
+    "median_unique_trimers": "TriMed",
+    "min_unique_trimers": "TriMin",
+    "max_unique_trimers": "TriMax",
+    "entropy_unique_trimers_on_all": "NTriEntr",
+    "mean_unique_trimers_on_all": "NTriMean",
+    "std_unique_trimers_on_all": "NTriStd",
+    "median_unique_trimers_on_all": "NTriMed",
+    "min_unique_trimers_on_all": "NTriMin"
+  }
+}
