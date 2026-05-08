@@ -187,40 +187,5 @@ if __name__ == "__main__":
     full_features = pd.concat([features_problexity_df, features_sd_df], axis=1)
     full_df = pd.concat([full_features, models_aggregated_df], axis=1)
 
-    with open('../../feature_analysis/sfs_feature_selection/results/models_params_features.json', 'r', encoding='utf-8') as f:
-        selected_features = json.load(f)['best']['features_fs']
-
-    selected_features.append(target_column)
-    mcc_sing_cols = [
-
-        "mean_levenshtein",
-        "std_levenshtein",
-        "entropy_len",
-        "std_len",
-        "min_len",
-        "mean_shannon_entropy",
-        "std_shannon_entropy",
-        "median_shannon_entropy",
-        "entropy_unique_trimers",
-        "std_unique_trimers",
-        "median_unique_trimers",
-        "max_unique_trimers",
-        "entropy_unique_trimers_on_all",
-        "median_unique_trimers_on_all",
-        "mcc_mean"
-    ]
-    with open('../../complexity_features/dc_sequence_diversity/feature_names.json', 'r', encoding='utf-8') as f:
-        feature_names = json.load(f)['names']
-
-    # mcc_sing_cols = [feature_names[f] for f in mcc_sing_cols if f in feature_names.keys()]
-    # mcc_sing_cols.extend(["C1",
-    #     "C2",
-    #     "T1",
-    #     "density",
-    #     "clsCoef", "mcc_mean"])
-    # print(len(mcc_sing_cols))
-    # print(set(selected_features) - set(mcc_sing_cols))
-    # print(set(mcc_sing_cols) - set(selected_features))
-    sfs_df = full_df[selected_features]
-    results = find_best_clustering(sfs_df, sfs_df[target_column], 3)
+    results = find_best_clustering(full_df, full_df[target_column], 3)
     print(results.head())
