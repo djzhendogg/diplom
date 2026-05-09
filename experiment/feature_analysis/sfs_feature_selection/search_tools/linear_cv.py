@@ -1,46 +1,70 @@
+import numpy as np
+from scipy.stats import spearmanr
+from sklearn.decomposition import PCA
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import LinearRegression, Lasso, Ridge
-from sklearn.model_selection import KFold, cross_val_score
+from sklearn.model_selection import RepeatedKFold
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
-from sklearn.tree import DecisionTreeRegressor
-
-from experiment.feature_analysis.sfs_feature_selection.search_tools.sp_scorer import spearman_scorer
 
 
-def run_cv(col_type, target_type, regressor_type, x_df, y_df):
-    X = x_df[col_type[1]]
-    y = y_df[target_type]
+def run_cv(target_type, regressor_type, x_df, y_df):
+    cv = RepeatedKFold(n_splits=5, n_repeats=10, random_state=42)
 
     if regressor_type == 'linear':
         regressor = LinearRegression()
+        use_scaler = True
+
     elif regressor_type == 'lasso':
-        regressor = Lasso(alpha=0.01)
-    elif regressor_type == 'tree':
-        regressor = DecisionTreeRegressor(random_state=42, max_leaf_nodes=10)
+        regressor = Lasso(alpha=0.01, random_state=42)
+        use_scaler = True
+
     elif regressor_type == 'ridge':
-        regressor = Ridge(alpha=1.0)
+        regressor = Ridge(alpha=1.0, random_state=42)
+        use_scaler = True
+
+    elif regressor_type == 'rf':
+        regressor = RandomForestRegressor(
+            n_estimators=200,
+            max_depth=None,
+            min_samples_leaf=2,
+            random_state=42
+        )
+        use_scaler = False
+
     else:
         print("No such type of model")
         return
-    pipeline = Pipeline([
-        ('scaler', StandardScaler()),
-        ('regressor', regressor)
-    ])
 
-    cv = KFold(n_splits=5, shuffle=True, random_state=42)
+    X = x_df
+    y = y_df[target_type]
 
-    r2_scores = cross_val_score(pipeline, X, y, cv=cv,
-                                scoring='r2')
+    steps = []
+    if use_scaler:
+        steps.append(('scaler', StandardScaler()))
 
-    spearman_scores = cross_val_score(pipeline, X, y, cv=cv,
-                                      scoring=spearman_scorer)
+    steps.append(('pca', PCA(n_components=0.95)))
+    steps.append(('regressor', regressor))
+    pipeline = Pipeline(steps)
 
-    print("=== РЕЗУЛЬТАТЫ КРОСС-ВАЛИДАЦИИ (5-FOLD) ===")
-    print(f"{col_type[0]}: {col_type[1]}")
-    print(f'параметры: target_type: {target_type}, regressor_type: {regressor_type}')
-    print(f"\nR2 на CV: {r2_scores}")
-    print(f"Средний R2 на CV: {r2_scores.mean():.4f} (+/- {r2_scores.std() * 2:.4f})")
-    print(f"\nSpearman на CV: {spearman_scores}")
-    print(f"Средний Spearman на CV: {spearman_scores.mean():.4f} (+/- {spearman_scores.std() * 2:.4f})")
-    print("=" * 50)
-    return spearman_scores.mean(), spearman_scores.std(), r2_scores.mean(), r2_scores.std()
+    spearman_scores = []
+
+    for fold, (train_idx, test_idx) in enumerate(cv.split(X)):
+        X_train, X_test = X.iloc[train_idx], X.iloc[test_idx]
+        y_train, y_test = y.iloc[train_idx], y.iloc[test_idx]
+
+        pipeline.fit(X_train, y_train)
+        y_pred = pipeline.predict(X_test)
+
+        spearman = spearmanr(y_test, y_pred).correlation
+        spearman_scores.append(spearman)
+
+    print("\n===== RESULT (Repeated CV) =====")
+    print(f"Spearman mean: {np.mean(spearman_scores):.4f}")
+    print(f"Spearman std: {np.std(spearman_scores):.4f}")
+
+    return {
+        "spearman_mean": np.mean(spearman_scores),
+        "spearman_std": np.std(spearman_scores),
+        "all_scores": spearman_scores
+    }

@@ -1,13 +1,12 @@
 import numpy as np
 from scipy.stats import spearmanr
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.feature_selection import SequentialFeatureSelector
 from sklearn.linear_model import LinearRegression, Lasso, Ridge
 from sklearn.model_selection import KFold, cross_val_score
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
-from sklearn.tree import DecisionTreeRegressor
 
-from experiment.feature_analysis.sfs_feature_selection.search_tools.linear_cv import run_cv
 from experiment.feature_analysis.sfs_feature_selection.search_tools.sp_scorer import spearman_scorer
 
 
@@ -21,6 +20,13 @@ def run_fs(target_type, regressor_type, x_df, y_df):
         regressor = Lasso(alpha=0.01, random_state=42)
     elif regressor_type == 'ridge':
         regressor = Ridge(random_state=42)
+    elif regressor_type == 'rf':
+        regressor = RandomForestRegressor(
+            n_estimators=200,
+            max_depth=None,
+            min_samples_leaf=2,
+            random_state=42
+        )
     else:
         print("No such type of model")
         return
@@ -44,39 +50,39 @@ def run_fs(target_type, regressor_type, x_df, y_df):
         best_features = None
 
         # 🔁 перебор количества фич ТОЛЬКО на train
-        for n in range(5, max_features):
-            sfs = SequentialFeatureSelector(
-                Pipeline([
-                    ('scaler', StandardScaler()),
-                    ('regressor', regressor)
-                ]),
-                direction='backward',
-                scoring=spearman_scorer,
-                cv=inner_cv,
-                n_features_to_select=n
-            )
+        # for n in range(5, max_features):
+        sfs = SequentialFeatureSelector(
+            Pipeline([
+                ('scaler', StandardScaler()),
+                ('regressor', regressor)
+            ]),
+            direction='backward',
+            scoring=spearman_scorer,
+            cv=inner_cv,
+            n_features_to_select=5
+        )
 
-            sfs.fit(X_train, y_train)
-            features = X_train.columns[sfs.get_support()]
+        sfs.fit(X_train, y_train)
+        features = X_train.columns[sfs.get_support()]
 
-            X_train_fs = X_train[features]
+        X_train_fs = X_train[features]
 
-            scores = cross_val_score(
-                Pipeline([
-                    ('scaler', StandardScaler()),
-                    ('regressor', regressor)
-                ]),
-                X_train_fs,
-                y_train,
-                cv=inner_cv,
-                scoring=spearman_scorer
-            )
+        scores = cross_val_score(
+            Pipeline([
+                ('scaler', StandardScaler()),
+                ('regressor', regressor)
+            ]),
+            X_train_fs,
+            y_train,
+            cv=inner_cv,
+            scoring=spearman_scorer
+        )
 
-            score = scores.mean()
+        score = scores.mean()
 
-            if score > best_score:
-                best_score = score
-                best_features = features
+        if score > best_score:
+            best_score = score
+            best_features = features
 
         print(f"Лучшее число фич: {len(best_features)}")
 
@@ -99,7 +105,7 @@ def run_fs(target_type, regressor_type, x_df, y_df):
         selected_features_per_fold.append(list(best_features))
 
     print("\n===== ИТОГ (NESTED CV) =====")
-    print(f"Spearman mean: {np.mean(outer_spearman_scores):.4f} (+/- {np.std(outer_spearman_scores)*2:.4f})")
+    print(f"Spearman mean: {np.mean(outer_spearman_scores):.4f} (+/- {np.std(outer_spearman_scores) * 2:.4f})")
 
     return {
         "spearman_mean": np.mean(outer_spearman_scores),
