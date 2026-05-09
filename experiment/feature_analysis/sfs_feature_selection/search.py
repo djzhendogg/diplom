@@ -2,7 +2,6 @@ import json
 
 import pandas as pd
 
-from experiment.feature_analysis.sfs_feature_selection.search_tools.linear_cv import run_cv
 from experiment.feature_analysis.sfs_feature_selection.search_tools.linear_fs import run_fs
 
 models_aggregated_path = "../../baseline/results/models_aggregated_mean.csv"
@@ -45,11 +44,11 @@ results_df.drop(['features_fs'], axis=1, inplace=True)
 results_df.to_csv('results/spearman_linear.csv', index=False)
 for i in range(results_df.shape[0]):
     row = results_df.iloc[i]
-    print(f"{row['targets']} & {row['model']} & {round(row['spearman_mean'], 3)} ± {round(row['spearman_std'], 3)}  \\\ \hline")
+    print(
+        f"{row['targets']} & {row['model']} & {round(row['spearman_mean'], 3)} ± {round(row['spearman_std'], 3)}  \\\ \hline")
 
 mcc_results = [item for item in full_results if item['targets'] == 'mcc_mean']
 mcc_results.sort(key=lambda x: x['spearman_mean'], reverse=True)
 
 with open('results/models_params_features.json', 'w', encoding='utf-8') as f:
     json.dump({'best': mcc_results[0], 'full': full_results}, f, ensure_ascii=False, indent=4)
-
