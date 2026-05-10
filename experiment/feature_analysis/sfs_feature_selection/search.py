@@ -30,8 +30,8 @@ methods = {
     "ridge_sfs": lambda X, y: run_ridge_fs(X, y),
     "lasso_coef": run_lasso_fs,
     "rf_sfs": lambda X, y: run_rf_sfs(X, y),
-    "rf_importance": lambda X, y: run_rf_importance(X, y, top_k=20),
-    "rf_permutation": lambda X, y: run_rf_permutation(X, y, top_k=20),
+    "rf_importance": lambda X, y: run_rf_importance(X, y),
+    "rf_permutation": lambda X, y: run_rf_permutation(X, y),
 }
 
 results = []
@@ -55,12 +55,10 @@ for target in ['mcc_mean', 'f1_mean', 'auc_roc_mean']:
 df = pd.DataFrame(results)
 df.drop(['features'], axis=1).to_csv('results/spearman_all.csv', index=False)
 
-# красивый вывод
 for _, row in df.iterrows():
     print(f"{row['target']} & {row['model']} & "
           f"{round(row['spearman_mean'], 3)} ± {round(row['spearman_std'], 3)} \\\\ \\hline")
 
-# сохраняем лучший по MCC
 mcc_sorted = sorted(
     [r for r in results if r['target'] == 'mcc_mean'],
     key=lambda x: x['spearman_mean'],

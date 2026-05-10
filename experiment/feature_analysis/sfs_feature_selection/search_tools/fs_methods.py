@@ -137,7 +137,6 @@ def run_lasso_fs(X, y):
 
         # fallback если Lasso занулил всё
         if len(features) == 0:
-            print("⚠️ Lasso занулил все фичи — используем все")
             features = X_train.columns
 
         print(f"Alpha chosen: {lasso.alpha_:.6f} | Features: {len(features)}")
@@ -168,7 +167,54 @@ def run_rf_sfs(X, y, k_range=None):
     return _nested_cv(X, y, get_features)
 
 
-def run_rf_importance(X, y, top_k=5):
+def _select_best_k_rf(X_train, y_train, inner_cv, model, importance_getter, k_range):
+    best_score = -np.inf
+    best_features = None
+
+    model.fit(X_train, y_train)
+
+    importances = importance_getter(model, X_train, y_train)
+
+    ranked_idx = np.argsort(importances)[::-1]
+
+    for k in k_range:
+        idx = ranked_idx[:k]
+        features = X_train.columns[idx]
+
+        scores = cross_val_score(
+            model,
+            X_train[features],
+            y_train,
+            cv=inner_cv,
+            scoring=spearman_scorer
+        )
+
+        score = scores.mean()
+
+        if score > best_score:
+            best_score = score
+            best_features = features
+
+    return best_features
+
+
+def rf_permutation_getter(model, X, y):
+    result = permutation_importance(
+        model,
+        X,
+        y,
+        scoring=spearman_scorer,
+        n_repeats=10,
+        random_state=42
+    )
+    return result.importances_mean
+
+
+def rf_importance_getter(model, X, y):
+    return model.feature_importances_
+
+
+def run_rf_importance(X, y, k_range=None):
     def get_features(X_train, y_train, inner_cv):
         model = RandomForestRegressor(
             n_estimators=200,
@@ -176,18 +222,27 @@ def run_rf_importance(X, y, top_k=5):
             random_state=42
         )
 
-        model.fit(X_train, y_train)
+        if k_range is None:
+            max_k = min(20, X_train.shape[1])
+            k_vals = range(5, max_k)
+        else:
+            k_vals = k_range
 
-        importances = model.feature_importances_
-        idx = np.argsort(importances)[::-1][:top_k]
-        features = X_train.columns[idx]
+        features = _select_best_k_rf(
+            X_train,
+            y_train,
+            inner_cv,
+            model,
+            rf_importance_getter,
+            k_vals
+        )
 
         return features, model
 
     return _nested_cv(X, y, get_features)
 
 
-def run_rf_permutation(X, y, top_k=5):
+def run_rf_permutation(X, y, k_range=None):
     def get_features(X_train, y_train, inner_cv):
         model = RandomForestRegressor(
             n_estimators=200,
@@ -195,19 +250,20 @@ def run_rf_permutation(X, y, top_k=5):
             random_state=42
         )
 
-        model.fit(X_train, y_train)
+        if k_range is None:
+            max_k = min(20, X_train.shape[1])
+            k_vals = range(5, max_k)
+        else:
+            k_vals = k_range
 
-        result = permutation_importance(
-            model,
+        features = _select_best_k_rf(
             X_train,
             y_train,
-            scoring=spearman_scorer,
-            n_repeats=10,
-            random_state=42
+            inner_cv,
+            model,
+            rf_permutation_getter,
+            k_vals
         )
-
-        idx = np.argsort(result.importances_mean)[::-1][:top_k]
-        features = X_train.columns[idx]
 
         return features, model
 
