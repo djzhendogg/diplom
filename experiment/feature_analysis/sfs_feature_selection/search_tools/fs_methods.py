@@ -8,7 +8,7 @@ from sklearn.model_selection import KFold, cross_val_score
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
-from sp_scorer import spearman_scorer
+from .sp_scorer import spearman_scorer
 
 
 def _nested_cv(X, y, get_features_func):
