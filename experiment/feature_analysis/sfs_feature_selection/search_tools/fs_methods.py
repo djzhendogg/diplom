@@ -85,7 +85,7 @@ def run_linear_fs(X, y, k_range=None):
 
         if k_range is None:
             max_k = min(20, X_train.shape[1])
-            k_vals = range(5, max_k)
+            k_vals = range(2, max_k)
         else:
             k_vals = k_range
 
@@ -224,7 +224,7 @@ def run_rf_importance(X, y, k_range=None):
 
         if k_range is None:
             max_k = min(20, X_train.shape[1])
-            k_vals = range(5, max_k)
+            k_vals = range(2, max_k)
         else:
             k_vals = k_range
 
@@ -252,7 +252,7 @@ def run_rf_permutation(X, y, k_range=None):
 
         if k_range is None:
             max_k = min(20, X_train.shape[1])
-            k_vals = range(5, max_k)
+            k_vals = range(2, max_k)
         else:
             k_vals = k_range
 
