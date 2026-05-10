@@ -187,5 +187,16 @@ if __name__ == "__main__":
     full_features = pd.concat([features_problexity_df, features_sd_df], axis=1)
     full_df = pd.concat([full_features, models_aggregated_df], axis=1)
 
-    results = find_best_clustering(full_df, full_df[target_column], 3)
-    print(results.head())
+    with open('../../feature_analysis/sfs_feature_selection/results/models_params_features.json', 'r', encoding='utf-8') as f:
+        selected_features = json.load(f)
+
+    selected_full = list({f for entry in selected_features["full"] for fs in entry["features_fs"] for f in fs})
+    selected_best = list({f for entry in selected_features["full"] for fs in entry["features_fs"] for f in fs})
+    df_sel_full = full_df[selected_full]
+    df_sel_best = full_df[selected_best]
+
+    results_full = find_best_clustering(df_sel_full, full_df[target_column], 3)
+    print(results_full.head())
+
+    results_best = find_best_clustering(df_sel_best, full_df[target_column], 3)
+    print(results_best.head())
