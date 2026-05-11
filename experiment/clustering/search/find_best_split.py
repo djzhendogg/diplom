@@ -249,9 +249,10 @@ if __name__ == "__main__":
         selected_features_path="../../feature_analysis/sfs_feature_selection/results/models_params_features.json",
         target_column="mcc_mean"
     )
-
+    # df_sel_full['mcc'] = target
     results_full = find_best_clustering(scale_pca(df_sel_full), target, 3)
-    results_full.head(10).to_csv("../results/candidates_full_fs.csv", index=False)
+    results_full.head(10).to_csv("../results/full_fs.csv", index=False)
 
+    # df_sel_best['mcc'] = target
     results_best = find_best_clustering(scale_pca(df_sel_best), target, 3)
-    results_best.head(10).to_csv("../results/candidates_best_fs.csv", index=False)
+    results_best.head(10).to_csv("../results/best_fs.csv", index=False)
