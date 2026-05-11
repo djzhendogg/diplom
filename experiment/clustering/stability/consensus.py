@@ -310,7 +310,7 @@ def clustering_stability_analysis(
 
 
 if __name__ == "__main__":
-    mode = 'full'
+    mode = 'best'
     df_sel_full, df_sel_best, target = read_data(
         models_aggregated_path="../../baseline/results/models_aggregated_mean.csv",
         features_problexity_path="../../complexity_features/dc_problexity/results/problexity.csv",
@@ -318,6 +318,9 @@ if __name__ == "__main__":
         selected_features_path="../../feature_analysis/sfs_feature_selection/results/models_params_features.json",
         target_column="mcc_mean"
     )
+    df_sel_full['mcc'] = target
+    df_sel_best['mcc'] = target
+
     work_df = df_sel_full
     if mode == 'best':
         work_df = df_sel_best
