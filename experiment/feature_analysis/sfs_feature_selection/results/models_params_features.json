@@ -1,64 +1,563 @@
 {
     "best": {
-        "model": "ridge",
+        "model": "rf",
         "targets": "mcc_mean",
-        "spearman_mean": 0.6703296703296703,
-        "spearman_std": 0.12310831624745709
+        "spearman_mean": 0.7037362637362639,
+        "spearman_std": 0.14590758398673884,
+        "features_fs": [
+            [
+                "T1",
+                "LenMean",
+                "LenMin",
+                "ShEntrMin",
+                "ShEntrMax"
+            ],
+            [
+                "T1",
+                "LenMean",
+                "ShEntrMean",
+                "ShEntrMax",
+                "NTriStd"
+            ],
+            [
+                "LSC",
+                "T1",
+                "LenMean",
+                "ShEntrMax",
+                "TriMed"
+            ],
+            [
+                "T1",
+                "LevMax",
+                "LenMean",
+                "ShEntrEntr",
+                "TriMin"
+            ],
+            [
+                "C1",
+                "T1",
+                "LenMed",
+                "LenMin",
+                "NTriEntr"
+            ]
+        ]
     },
     "full": [
         {
             "model": "lasso",
             "targets": "mcc_mean",
             "spearman_mean": 0.6184615384615385,
-            "spearman_std": 0.10710853211792902
+            "spearman_std": 0.10710853211792902,
+            "features_fs": [
+                [
+                    "T1",
+                    "clsCoef",
+                    "LevMed",
+                    "ShEntrMin",
+                    "TriMax"
+                ],
+                [
+                    "T1",
+                    "ShEntrStd",
+                    "TriMean",
+                    "NTriStd",
+                    "NTriMed"
+                ],
+                [
+                    "T1",
+                    "LevEntr",
+                    "ShEntrMin",
+                    "TriMax",
+                    "NTriStd"
+                ],
+                [
+                    "T1",
+                    "LevMean",
+                    "TriEntr",
+                    "TriMed",
+                    "NTriEntr"
+                ],
+                [
+                    "T1",
+                    "LenMed",
+                    "LenMin",
+                    "ShEntrEntr",
+                    "TriEntr"
+                ]
+            ]
         },
         {
             "model": "linear",
             "targets": "mcc_mean",
             "spearman_mean": 0.6008791208791209,
-            "spearman_std": 0.14023011433206445
+            "spearman_std": 0.14023011433206445,
+            "features_fs": [
+                [
+                    "T1",
+                    "LenMean",
+                    "TriMean",
+                    "NTriMean",
+                    "NTriStd"
+                ],
+                [
+                    "C1",
+                    "C2",
+                    "T1",
+                    "LevEntr",
+                    "LevMean"
+                ],
+                [
+                    "T1",
+                    "LevMax",
+                    "TriMean",
+                    "TriStd",
+                    "TriMax"
+                ],
+                [
+                    "T1",
+                    "LevEntr",
+                    "LenEntr",
+                    "TriEntr",
+                    "NTriEntr"
+                ],
+                [
+                    "clsCoef",
+                    "LenMean",
+                    "LenMax",
+                    "TriMean",
+                    "NTriMed"
+                ]
+            ]
         },
         {
             "model": "ridge",
             "targets": "mcc_mean",
             "spearman_mean": 0.6703296703296703,
-            "spearman_std": 0.12310831624745709
+            "spearman_std": 0.12310831624745709,
+            "features_fs": [
+                [
+                    "T1",
+                    "LevMed",
+                    "LenMin",
+                    "ShEntrStd",
+                    "NTriEntr"
+                ],
+                [
+                    "T1",
+                    "LevEntr",
+                    "LenEntr",
+                    "LenMin",
+                    "ShEntrStd"
+                ],
+                [
+                    "T1",
+                    "LevEntr",
+                    "LenMin",
+                    "TriStd",
+                    "NTriStd"
+                ],
+                [
+                    "T1",
+                    "LevMean",
+                    "LenMin",
+                    "ShEntrStd",
+                    "NTriEntr"
+                ],
+                [
+                    "T1",
+                    "LevMean",
+                    "LenMin",
+                    "ShEntrStd",
+                    "NTriEntr"
+                ]
+            ]
+        },
+        {
+            "model": "rf",
+            "targets": "mcc_mean",
+            "spearman_mean": 0.7037362637362639,
+            "spearman_std": 0.14590758398673884,
+            "features_fs": [
+                [
+                    "T1",
+                    "LenMean",
+                    "LenMin",
+                    "ShEntrMin",
+                    "ShEntrMax"
+                ],
+                [
+                    "T1",
+                    "LenMean",
+                    "ShEntrMean",
+                    "ShEntrMax",
+                    "NTriStd"
+                ],
+                [
+                    "LSC",
+                    "T1",
+                    "LenMean",
+                    "ShEntrMax",
+                    "TriMed"
+                ],
+                [
+                    "T1",
+                    "LevMax",
+                    "LenMean",
+                    "ShEntrEntr",
+                    "TriMin"
+                ],
+                [
+                    "C1",
+                    "T1",
+                    "LenMed",
+                    "LenMin",
+                    "NTriEntr"
+                ]
+            ]
         },
         {
             "model": "lasso",
             "targets": "f1_mean",
             "spearman_mean": 0.636043956043956,
-            "spearman_std": 0.2545567334402881
+            "spearman_std": 0.2545567334402881,
+            "features_fs": [
+                [
+                    "C1",
+                    "T1",
+                    "LenMean",
+                    "ShEntrEntr",
+                    "TriEntr"
+                ],
+                [
+                    "C2",
+                    "T1",
+                    "TriMed",
+                    "NTriMed",
+                    "NTriMin"
+                ],
+                [
+                    "C2",
+                    "T1",
+                    "LevEntr",
+                    "LenMin",
+                    "TriMax"
+                ],
+                [
+                    "C2",
+                    "T1",
+                    "LevStd",
+                    "LenMed",
+                    "NTriMin"
+                ],
+                [
+                    "C2",
+                    "T1",
+                    "TriEntr",
+                    "TriMed",
+                    "NTriMin"
+                ]
+            ]
         },
         {
             "model": "linear",
             "targets": "f1_mean",
             "spearman_mean": 0.5578021978021979,
-            "spearman_std": 0.21613862189887176
+            "spearman_std": 0.21613862189887176,
+            "features_fs": [
+                [
+                    "C1",
+                    "LSC",
+                    "LenStd",
+                    "LenMed",
+                    "ShEntrStd"
+                ],
+                [
+                    "T1",
+                    "LenMean",
+                    "LenMin",
+                    "ShEntrStd",
+                    "NTriEntr"
+                ],
+                [
+                    "C1",
+                    "T1",
+                    "LevStd",
+                    "LenMed",
+                    "NTriEntr"
+                ],
+                [
+                    "C2",
+                    "T1",
+                    "LenStd",
+                    "LenMed",
+                    "NTriEntr"
+                ],
+                [
+                    "C2",
+                    "LenMean",
+                    "LenStd",
+                    "ShEntrStd",
+                    "NTriMed"
+                ]
+            ]
         },
         {
             "model": "ridge",
             "targets": "f1_mean",
             "spearman_mean": 0.5745054945054945,
-            "spearman_std": 0.29979697674799566
+            "spearman_std": 0.29979697674799566,
+            "features_fs": [
+                [
+                    "C1",
+                    "T1",
+                    "LevMean",
+                    "LenMin",
+                    "ShEntrStd"
+                ],
+                [
+                    "T1",
+                    "LevMean",
+                    "LenMin",
+                    "ShEntrStd",
+                    "TriEntr"
+                ],
+                [
+                    "C1",
+                    "T1",
+                    "LevEntr",
+                    "ShEntrMax",
+                    "TriStd"
+                ],
+                [
+                    "C2",
+                    "T1",
+                    "LevMean",
+                    "LenMin",
+                    "NTriEntr"
+                ],
+                [
+                    "C2",
+                    "T1",
+                    "LevMean",
+                    "LenMin",
+                    "NTriEntr"
+                ]
+            ]
+        },
+        {
+            "model": "rf",
+            "targets": "f1_mean",
+            "spearman_mean": 0.6465934065934067,
+            "spearman_std": 0.21167653550094057,
+            "features_fs": [
+                [
+                    "C2",
+                    "clsCoef",
+                    "LevMax",
+                    "LenMin",
+                    "ShEntrMax"
+                ],
+                [
+                    "C2",
+                    "T1",
+                    "LenMean",
+                    "LenMin",
+                    "TriEntr"
+                ],
+                [
+                    "C2",
+                    "T1",
+                    "density",
+                    "LevMax",
+                    "ShEntrMax"
+                ],
+                [
+                    "C2",
+                    "LSC",
+                    "T1",
+                    "LenMean",
+                    "NTriMin"
+                ],
+                [
+                    "C1",
+                    "T1",
+                    "ShEntrMed",
+                    "NTriEntr",
+                    "NTriMin"
+                ]
+            ]
         },
         {
             "model": "lasso",
             "targets": "auc_roc_mean",
             "spearman_mean": 0.6272527472527473,
-            "spearman_std": 0.13517895039314584
+            "spearman_std": 0.13517895039314584,
+            "features_fs": [
+                [
+                    "T1",
+                    "clsCoef",
+                    "LevEntr",
+                    "ShEntrMin",
+                    "TriMax"
+                ],
+                [
+                    "T1",
+                    "LenMean",
+                    "ShEntrMax",
+                    "NTriMed",
+                    "NTriMin"
+                ],
+                [
+                    "T1",
+                    "density",
+                    "LevEntr",
+                    "LenMax",
+                    "TriMean"
+                ],
+                [
+                    "T1",
+                    "density",
+                    "ShEntrMax",
+                    "TriEntr",
+                    "TriMed"
+                ],
+                [
+                    "T1",
+                    "LevEntr",
+                    "LenMed",
+                    "TriEntr",
+                    "NTriMin"
+                ]
+            ]
         },
         {
             "model": "linear",
             "targets": "auc_roc_mean",
             "spearman_mean": 0.5727472527472528,
-            "spearman_std": 0.15192266955413067
+            "spearman_std": 0.15192266955413067,
+            "features_fs": [
+                [
+                    "T1",
+                    "LevMed",
+                    "LenMin",
+                    "NTriMean",
+                    "NTriStd"
+                ],
+                [
+                    "T1",
+                    "LevStd",
+                    "LevMax",
+                    "ShEntrStd",
+                    "TriMax"
+                ],
+                [
+                    "LevMax",
+                    "ShEntrMed",
+                    "ShEntrMax",
+                    "TriMean",
+                    "NTriMed"
+                ],
+                [
+                    "T1",
+                    "LevMed",
+                    "LenEntr",
+                    "TriEntr",
+                    "TriMean"
+                ],
+                [
+                    "C2",
+                    "LenMean",
+                    "ShEntrStd",
+                    "TriStd",
+                    "NTriMed"
+                ]
+            ]
         },
         {
             "model": "ridge",
             "targets": "auc_roc_mean",
             "spearman_mean": 0.6448351648351649,
-            "spearman_std": 0.13205554447912374
+            "spearman_std": 0.13205554447912374,
+            "features_fs": [
+                [
+                    "T1",
+                    "LevMean",
+                    "LenEntr",
+                    "LenMin",
+                    "TriEntr"
+                ],
+                [
+                    "T1",
+                    "LevMean",
+                    "LenMin",
+                    "ShEntrStd",
+                    "NTriEntr"
+                ],
+                [
+                    "T1",
+                    "LevEntr",
+                    "LevMed",
+                    "LenMax",
+                    "ShEntrMax"
+                ],
+                [
+                    "T1",
+                    "LevStd",
+                    "LenEntr",
+                    "TriEntr",
+                    "TriMed"
+                ],
+                [
+                    "T1",
+                    "LevMed",
+                    "LenMin",
+                    "TriEntr",
+                    "NTriEntr"
+                ]
+            ]
+        },
+        {
+            "model": "rf",
+            "targets": "auc_roc_mean",
+            "spearman_mean": 0.6360439560439561,
+            "spearman_std": 0.1706128804671044,
+            "features_fs": [
+                [
+                    "C2",
+                    "LenMean",
+                    "LenMin",
+                    "ShEntrEntr",
+                    "TriMin"
+                ],
+                [
+                    "C2",
+                    "T1",
+                    "LenMean",
+                    "ShEntrMed",
+                    "ShEntrMax"
+                ],
+                [
+                    "T1",
+                    "LenMean",
+                    "ShEntrEntr",
+                    "ShEntrMean",
+                    "ShEntrStd"
+                ],
+                [
+                    "T1",
+                    "ShEntrMin",
+                    "TriMean",
+                    "TriStd",
+                    "NTriMean"
+                ],
+                [
+                    "C2",
+                    "T1",
+                    "LenMed",
+                    "LenMin",
+                    "NTriEntr"
+                ]
+            ]
         }
     ]
 }

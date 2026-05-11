@@ -2,11 +2,20 @@ import json
 
 import numpy as np
 import pandas as pd
-
-from sklearn.cluster import KMeans, AgglomerativeClustering, SpectralClustering
+from sklearn.cluster import (
+    KMeans,
+    Birch
+)
 from sklearn.decomposition import PCA
+from sklearn.metrics import (
+    silhouette_score,
+    davies_bouldin_score,
+    calinski_harabasz_score
+)
+from sklearn.mixture import GaussianMixture
 from sklearn.preprocessing import StandardScaler
-import hdbscan
+
+from experiment.clustering.utils.prepare_clustering_data import read_data, scale_pca
 
 
 def evaluate_cluster_balance(labels):
@@ -33,6 +42,7 @@ def evaluate_cluster_balance(labels):
         "min_size": min_size,
         "min_ratio": min_ratio
     }
+
 
 def evaluate_target_separation(y, labels):
     df = pd.DataFrame({"target": y, "cluster": labels})
@@ -69,77 +79,116 @@ def evaluate_target_separation(y, labels):
         "means": means
     }
 
+
 def find_best_clustering(X, y, min_clusters=3):
-    scaler = StandardScaler()
-    X_scaled = scaler.fit_transform(X)
-    pca = PCA(n_components=0.95)
-    X_pca = pca.fit_transform(X_scaled)
 
     results = []
 
     for k in range(min_clusters, 11):
 
-        # -------- KMeans --------
+        # =========================================================
+        # KMeans
+        # =========================================================
+
         for init in ["k-means++", "random"]:
-            model = KMeans(n_clusters=k, init=init, n_init=10, random_state=42)
-            labels = model.fit_predict(X_pca)
-
-            results.append(evaluate_model("KMeans", {"k": k, "init": init},
-                                          X_pca, y, labels))
-
-        # -------- Agglomerative --------
-        for linkage in ["ward", "average", "complete"]:
-            for metric in ["euclidean", "manhattan"]:
-                if linkage == "ward" and metric != "euclidean":
-                    continue
-
-                model = AgglomerativeClustering(
-                    n_clusters=k,
-                    linkage=linkage,
-                    metric=metric
-                )
-                labels = model.fit_predict(X_pca)
-
-                results.append(evaluate_model(
-                    "Agglomerative",
-                    {"k": k, "linkage": linkage, "metric": metric},
-                    X_pca, y, labels
-                ))
-
-        # -------- Spectral --------
-        for affinity in ["rbf", "nearest_neighbors"]:
-            model = SpectralClustering(
+            model = KMeans(
                 n_clusters=k,
-                affinity=affinity,
+                init=init,
+                n_init=10,
                 random_state=42
             )
-            labels = model.fit_predict(X_pca)
 
-            results.append(evaluate_model(
-                "Spectral",
-                {"k": k, "affinity": affinity},
-                X_pca, y, labels
-            ))
+            labels = model.fit_predict(X)
 
-    # -------- HDBSCAN --------
-        for min_cluster_size in [10, 20, 50]:
-            for metric in ["euclidean", "manhattan"]:
-                model = hdbscan.HDBSCAN(
-                    min_cluster_size=min_cluster_size,
-                    metric=metric
+            results.append(
+                evaluate_model(
+                    "KMeans",
+                    {
+                        "n_clusters": k,
+                        "init": init
+                    },
+                    X,
+                    y,
+                    labels
                 )
-                labels = model.fit_predict(X_pca)
+            )
 
-                results.append(evaluate_model(
-                    "HDBSCAN",
-                    {"min_cluster_size": min_cluster_size, "metric": metric},
-                    X_pca, y, labels
-                ))
+        # =========================================================
+        # GaussianMixture
+        # =========================================================
 
-    results = pd.DataFrame([r for r in results if r is not None])
+        for covariance_type in [
+            "full",
+            "diag",
+            "tied",
+            "spherical"
+        ]:
+            for reg_covar in [1e-6, 1e-5, 1e-4]:
+                model = GaussianMixture(
+                    n_components=k,
+                    covariance_type=covariance_type,
+                    reg_covar=reg_covar,
+                    random_state=42
+                )
 
-    results = results[results["min_cluster_ratio"] > 0.05]
-    results = results.sort_values("separation_ratio", ascending=False)
+                model.fit(X)
+
+                labels = model.predict(X)
+
+                results.append(
+                    evaluate_model(
+                        "GaussianMixture",
+                        {
+                            "n_components": k,
+                            "covariance_type": covariance_type,
+                            "reg_covar": reg_covar
+                        },
+                        X,
+                        y,
+                        labels
+                    )
+                )
+
+        # =========================================================
+        # Birch
+        # =========================================================
+
+        for threshold in [0.3, 0.5, 0.7]:
+            for branching_factor in [15, 25, 50, 100]:
+                model = Birch(
+                    n_clusters=k,
+                    threshold=threshold,
+                    branching_factor=branching_factor
+                )
+
+                labels = model.fit_predict(X)
+
+                results.append(
+                    evaluate_model(
+                        "Birch",
+                        {
+                            "n_clusters": k,
+                            "threshold": threshold,
+                            "branching_factor": branching_factor
+                        },
+                        X,
+                        y,
+                        labels
+                    )
+                )
+
+    results = pd.DataFrame(
+        [r for r in results if r is not None]
+    )
+
+    results = results[
+        results["min_cluster_ratio"] > 0.05
+        ]
+
+    results = results.sort_values(
+        "separation_ratio",
+        ascending=False
+    )
 
     return results
 
@@ -152,51 +201,57 @@ def evaluate_model(name, params, X, y, labels):
     target_metrics = evaluate_target_separation(y, labels)
     if target_metrics is None:
         return None
+
     balance_metrics = evaluate_cluster_balance(labels)
     if balance_metrics is None:
         return None
+
+    try:
+        silhouette = silhouette_score(X, labels)
+    except:
+        silhouette = np.nan
+
+    try:
+        davies_bouldin = davies_bouldin_score(X, labels)
+    except:
+        davies_bouldin = np.nan
+
+    try:
+        calinski_harabasz = calinski_harabasz_score(X, labels)
+    except:
+        calinski_harabasz = np.nan
+
     return {
         "model": name,
         "params": params,
         "n_clusters": len(set(labels)) - (1 if -1 in labels else 0),
+
         "separation_ratio": target_metrics["separation_ratio"],
+        # "intra_std": target_metrics["intra_std"],
+        # "inter_mean_diff": target_metrics["inter_mean_diff"],
+        # "mean_diff": target_metrics["mean_diff"],
+
         "cv": balance_metrics["cv"],
-        "intra_std": target_metrics["intra_std"],
-        "inter_mean_diff": target_metrics["inter_mean_diff"],
-        "mean_diff": target_metrics["mean_diff"],
         "min_cluster_size": balance_metrics["min_size"],
-        "min_cluster_ratio": balance_metrics["min_ratio"]
+        "min_cluster_ratio": balance_metrics["min_ratio"],
+
+        "silhouette": silhouette,
+        "davies_bouldin": davies_bouldin,
+        "calinski_harabasz": calinski_harabasz
     }
 
 
 if __name__ == "__main__":
-    models_aggregated_path = "../../baseline/results/models_aggregated_mean.csv"
-    features_problexity_path = "../../complexity_features/dc_problexity/results/problexity.csv"
-    features_sd_path = "../../complexity_features/dc_sequence_diversity/results/sequence_diversity_significant.csv"
+    df_sel_full, df_sel_best, target = read_data(
+        models_aggregated_path="../../baseline/results/models_aggregated_mean.csv",
+        features_problexity_path="../../complexity_features/dc_problexity/results/problexity.csv",
+        features_sd_path="../../complexity_features/dc_sequence_diversity/results/sequence_diversity_significant.csv",
+        selected_features_path="../../feature_analysis/sfs_feature_selection/results/models_params_features.json",
+        target_column="mcc_mean"
+    )
 
-    models_aggregated_df = pd.read_csv(models_aggregated_path, index_col='name')
-    models_aggregated_df.sort_index(ascending=False, inplace=True)
-    target_column = 'mcc_mean'
+    results_full = find_best_clustering(scale_pca(df_sel_full), target, 3)
+    results_full.head(10).to_csv("../results/candidates_full_fs.csv", index=False)
 
-    features_problexity_df = pd.read_csv(features_problexity_path, index_col='name')
-    features_sd_df = pd.read_csv(features_sd_path, index_col='name')
-
-    features_problexity_df = features_problexity_df.loc[models_aggregated_df.index]
-    features_sd_df = features_sd_df.loc[models_aggregated_df.index]
-
-    full_features = pd.concat([features_problexity_df, features_sd_df], axis=1)
-    full_df = pd.concat([full_features, models_aggregated_df], axis=1)
-
-    with open('../../feature_analysis/sfs_feature_selection/results/models_params_features.json', 'r', encoding='utf-8') as f:
-        selected_features = json.load(f)
-
-    selected_full = list({f for entry in selected_features["full"] for fs in entry["features_fs"] for f in fs})
-    selected_best = list({f for entry in selected_features["full"] for fs in entry["features_fs"] for f in fs})
-    df_sel_full = full_df[selected_full]
-    df_sel_best = full_df[selected_best]
-
-    results_full = find_best_clustering(df_sel_full, full_df[target_column], 3)
-    print(results_full.head())
-
-    results_best = find_best_clustering(df_sel_best, full_df[target_column], 3)
-    print(results_best.head())
+    results_best = find_best_clustering(scale_pca(df_sel_best), target, 3)
+    results_best.head(10).to_csv("../results/candidates_best_fs.csv", index=False)
