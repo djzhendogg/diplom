@@ -1,0 +1,18 @@
+type,avr,weighted_avr
+Противовирусные,ankh_em_max,esm_c_max
+Антимикробные,prott5_max,prott5_max
+Проникающие в клетки,prott5_max,prott5_max
+Противоопухолевые,prott5_max,prott5_max
+Гемолитические,ankh_em_max,prott5_max
+Антибактериальные,prott5_max,prott5_max
+Противогрибковые,ankh_em_max,ankh_em_max
+Противопаразитарные,prott5_max,prott5_max
+Сенсорные,prott5_max,ankh_em_max
+Противовоспалительные,prott5_max,prott5_max
+Антигипертензивные,ankh_em_max,ankh_em_max
+Антидиабетические,esm_c_max,esm_c_max
+Вкусовые,prott5_max,prott5_max
+Противоокислительные,prott5_max,prott5_max
+Нейропептиды,esm_c_max,esm_c_max
+Токсичные,prott5_max,prott5_max
+Другие,esm_c_max,esm_c_max

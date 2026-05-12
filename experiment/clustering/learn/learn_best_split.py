@@ -60,7 +60,7 @@ pprint(
 )
 result_df, cluster_to_rank, cluster_to_weight = add_cluster_ranks(work_df)
 
-result_df.to_csv('../results/ready_data/clustered_benchmarks.csv', index=False)
+result_df.to_csv('../results/ready_data/clustered_benchmarks.csv')
 print(len(features))
 
 save_pipeline(
