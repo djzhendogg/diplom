@@ -26,12 +26,12 @@ X = pd.concat([features_problexity_df, features_sd_df], axis=1)
 y_all = models_df
 
 methods = {
-    "linear_sfs": lambda X, y: run_linear_fs(X, y),
-    "ridge_sfs": lambda X, y: run_ridge_fs(X, y),
+    "linear_sfs": lambda X, y: run_linear_fs(X, y, k_range=range(5, 6)),
+    "ridge_sfs": lambda X, y: run_ridge_fs(X, y, k_range=range(5, 6)),
     "lasso_coef": run_lasso_fs,
-    "rf_sfs": lambda X, y: run_rf_sfs(X, y),
-    "rf_importance": lambda X, y: run_rf_importance(X, y),
-    "rf_permutation": lambda X, y: run_rf_permutation(X, y),
+    "rf_sfs": lambda X, y: run_rf_sfs(X, y, k_range=range(5, 6)),
+    "rf_importance": lambda X, y: run_rf_importance(X, y, k_range=range(5, 6)),
+    "rf_permutation": lambda X, y: run_rf_permutation(X, y, k_range=range(5, 6)),
 }
 
 results = []
@@ -53,7 +53,7 @@ for target in ['mcc_mean', 'f1_mean', 'auc_roc_mean']:
         })
 
 df = pd.DataFrame(results)
-df.drop(['features'], axis=1).to_csv('results/spearman_all.csv', index=False)
+df.drop(['features'], axis=1).to_csv('results/spearman_linear.csv', index=False)
 
 for _, row in df.iterrows():
     print(f"{row['target']} & {row['model']} & "
@@ -65,7 +65,7 @@ mcc_sorted = sorted(
     reverse=True
 )
 
-with open('results/best_model.json', 'w', encoding='utf-8') as f:
+with open('results/models_params_features.json', 'w', encoding='utf-8') as f:
     json.dump({
         "best": mcc_sorted[0],
         "all": results
