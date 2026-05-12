@@ -1,0 +1,71 @@
+name,type,Positives ,negative ,id
+ace_vaxinpad,Антигипертензивные,303,385,AHT-1
+ace_inhibitory_activity,Антигипертензивные,1299,1299,AHT-2
+anitinflamatory,Противовоспалительные,1451,2339,INF-1
+aip_antiinflam,Противовоспалительные,863,1261,INF-2
+aip_aippred,Противовоспалительные,420,629,INF-3
+anti_MRSA,Антибактериальные,148,847,AB-1
+antibacterial,Антибактериальные,8278,8278,AB-2
+acp_anticp,Противоопухолевые,224,225,ANT-1
+acp_mlacp,Противоопухолевые,187,398,ANT-2
+acp_iacp,Противоопухолевые,138,206,ANT-3
+anticancer_alternative,Противоопухолевые,970,970,ANT-4
+anticancer_main,Противоопухолевые,861,861,ANT-5
+antidiabetic,Антидиабетические,236,236,AD-1
+afp_antifp,Противогрибковые,1459,1457,AF-1
+afp_amppred,Противогрибковые,1329,1384,AF-2
+antifungal,Противогрибковые,993,993,AF-3
+antimalarial_alternative,Противопаразитарные,138,677,AP-1
+antimalarial_main,Противопаразитарные,138,2069,AP-2
+amp_modlamp,Антимикробные,1225,1354,AMP-1
+amp_antibp2,Антимикробные,999,994,AMP-2
+amp_iamp2l,Антимикробные,878,2405,AMP-3
+amp_antibp,Антимикробные,431,430,AMP-4
+amp_csamp,Антимикробные,128,76,AMP-5
+amp_fernandes,Антимикробные,115,116,AMP-6
+amp_gonzales,Антимикробные,27,102,AMP-7
+antimicrobial,Антимикробные,4134,4134,AMP-8
+antimicrobial_UniDL4BioPep,Антимикробные,6282,4707,AMP-9
+antioxidant,Противоокислительные,1060,1060,AO-1
+antioxidant_UniDL4BioPep,Противоокислительные,687,717,AO-2
+antiparasitic,Противопаразитарные,290,916,AP-3
+atb_antitbp,Антибактериальные,246,246,AB-3
+atb_iantitb,Антибактериальные,246,246,AB-4
+avp_amppred,Противовирусные,721,739,AV-1
+avp_avppred,Противовирусные,598,448,AV-2
+antiviral,Противовирусные,2944,2944,AV-3
+bitter,Вкусовые,320,320,TASTE-1
+blood_brain_barrier,ГЭБ-проникающие пептиды,119,119,BBB-1
+cpp_mlcpp,Проникающие в клетки,1165,738,CPP-1
+cpp_cellppd,Проникающие в клетки,807,807,CPP-2
+cpp_cellppdmod,Проникающие в клетки,732,730,CPP-3
+cpp_kelmcpp,Проникающие в клетки,504,499,CPP-4
+cpp_cppredfl,Проникающие в клетки,462,462,CPP-5
+cpp_mlcppue,Проникающие в клетки,187,187,CPP-6
+cpp_sanders,Проникающие в клетки,111,34,CPP-7
+DPPIV_inhibitory_activity,Противовирусные,664,665,AD-2
+Hemo_HAPPENN,Гемолитические,1543,2195,HEM-1
+hem_hemopi,Гемолитические,522,582,HEM-2
+HemoPI1,Гемолитические,552,552,HEM-3
+HemoPI2,Гемолитические,552,462,HEM-4
+HemoPI3,Гемолитические,884,738,HEM-5
+hiv_protease,Противовирусные,149,798,AV-5
+hiv_v3,Противовирусные,200,1151,AV-6
+isp_il10pred,Иммуносупрессивные,394,848,IMM-1
+bce_ibce,Сенсорные,1110,1408,SEN-1
+tce_zhao,Сенсорные,36,167,SEN-2
+neuropeptide,Нейропептиды,2425,2425,NP-1
+nep_neuropipred,Нейропептиды,875,875,NP-2
+hiv_bevirimat,Антидиабетические,43,112,AV-4
+pip_pipel,Провоспалительные,833,2395,PINF-1
+quorum_sensing,Сенсорные,218,214,SEN-3
+hiv_apv,Противовирусные,351,234,AV-7
+hiv_idv,Противовирусные,324,311,AV-8
+hiv_lpv,Противовирусные,188,228,AV-9
+hiv_nfv,Противовирусные,249,403,AV-10
+hiv_rtv,Противовирусные,291,315,AV-11
+hiv_sqv,Противовирусные,385,253,AV-12
+toxic_PLPTP,Токсичные,2138,5375,TOX-1
+toxic,Токсичные,1932,1932,TOX-2
+tumor_t_cell_antigens,Противоопухолевые,592,393,ANT-6
+umami,Вкусовые,140,302,TASTE-2
