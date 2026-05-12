@@ -2,8 +2,7 @@ import json
 
 import pandas as pd
 
-from experiment.feature_analysis.sfs_feature_selection.search_tools.linear_cv import run_cv
-from experiment.feature_analysis.sfs_feature_selection.search_tools.linear_fs import run_fs
+from search_tools.linear_fs import run_fs
 
 models_aggregated_path = "../../baseline/results/models_aggregated_mean.csv"
 features_problexity_path = "../../complexity_features/dc_problexity/results/problexity.csv"
