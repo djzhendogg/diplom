@@ -7,7 +7,7 @@ from sklearn.model_selection import KFold, cross_val_score
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
-from experiment.feature_analysis.sfs_feature_selection.search_tools.sp_scorer import spearman_scorer
+from .sp_scorer import spearman_scorer
 
 
 def run_fs(target_type, regressor_type, x_df, y_df):
