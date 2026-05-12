@@ -1,3 +1,4 @@
+import joblib
 from sklearn.cluster import (
     KMeans,
     Birch
@@ -18,3 +19,20 @@ def load_model(name, params):
     else:
         raise ValueError("Unknown model")
     return model
+
+
+def save_pipeline(model, scaler, pca, cluster_to_rank, cluster_to_weight, feature_columns, path):
+    artifact = {
+        "scaler": scaler,
+        "pca": pca,
+        "clustering_model": model,
+        "cluster_to_rank": cluster_to_rank,
+        "cluster_to_weight": cluster_to_weight,
+        "feature_columns": feature_columns
+    }
+
+    joblib.dump(artifact, path)
+
+
+def load_pipeline(path="clustering_pipeline.pkl"):
+    return joblib.load(path)

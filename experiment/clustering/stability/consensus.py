@@ -9,7 +9,8 @@ from sklearn.metrics import (
     silhouette_score
 )
 
-from experiment.clustering.utils.load_model import load_model
+from experiment.clustering.utils.describe_metrics import print_metrics
+from experiment.clustering.utils.model_io import load_model
 from experiment.clustering.utils.prepare_clustering_data import read_data, scale_pca
 
 
@@ -310,7 +311,7 @@ def clustering_stability_analysis(
 
 
 if __name__ == "__main__":
-    mode = 'best'
+    mode = 'full'
     df_sel_full, df_sel_best, target = read_data(
         models_aggregated_path="../../baseline/results/models_aggregated_mean.csv",
         features_problexity_path="../../complexity_features/dc_problexity/results/problexity.csv",
@@ -351,8 +352,12 @@ if __name__ == "__main__":
 
             "global_stability": consensus["global_stability"],
             "consensus_silhouette": consensus["consensus_silhouette"],
+
             "mean_ari": consensus["mean_ari"],
+            "std_ari":consensus["std_ari"],
+
             "mean_nmi": consensus["mean_nmi"],
+            "std_nmi":consensus["std_nmi"],
 
             "pac": consensus["pac"],
 
@@ -378,25 +383,4 @@ if __name__ == "__main__":
     results_df.to_csv(f"../results/stability/{mode}_fs.csv")
     best_row = results_df.iloc[0]
 
-    print ("\nBest model:")
-    print(best_row["model"])
-    print(best_row["params"])
-
-    print("\nGlobal stability:")
-    print(best_row["global_stability"])
-
-    print("\nConsensus silhouette:")
-    print(best_row["consensus_silhouette"])
-
-    print("\nPAC:")
-    print(best_row["pac"])
-
-    print("\nARI analysis:")
-    print(f"{best_row["mean_ari"]}"
-          # f" +- {best_row["std_ari"]}"
-          )
-
-    print("\nNMI analysis:")
-    print(f"{best_row["mean_nmi"]}"
-          # f" +- {best_row["std_nmi"]}"
-          )
+    print_metrics(best_row)
