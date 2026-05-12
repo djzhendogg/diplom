@@ -7,6 +7,11 @@ grouped_types = pd.read_csv("../../benchmark_description/type_stats.csv", index_
 name_type_df = pd.read_csv("../../benchmark_description/typed.csv", index_col="name")
 benchmark_df = pd.read_csv("../results/ready_data/clustered_benchmarks.csv", index_col="name")
 
+benchmark_df['id'] = name_type_df['id']
+benchmark_df.set_index("id", inplace=True)
+plm_mcc['id'] = name_type_df['id']
+plm_mcc.set_index("id", inplace=True)
+
 WATCH_TYPE = "max"
 PATH_GROUP_SAVE = "../results/case_study/groups"
 
@@ -17,7 +22,7 @@ single_element_names = []
 
 for group_name in grouped_types.index:
 
-    names = name_type_df[name_type_df["type"] == group_name].index.tolist()
+    names = name_type_df[name_type_df["type"] == group_name]['id'].tolist()
 
     if len(names) < 2:
         single_element_names.extend(names)
