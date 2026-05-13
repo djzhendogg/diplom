@@ -72,4 +72,4 @@ if __name__ == "__main__":
                         save=True, save_path="./results/problexity_cv.png"
                         )
     violinplot_single_feature(df, 'C1', True, "./results/violinplot_C1.png")
-    # violinplot_single_feature(df, 'C2', True, "./results/violinplot_C2.png")
+    violinplot_single_feature(df, 'C2', True, "./results/violinplot_C2.png")
