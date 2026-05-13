@@ -34,14 +34,11 @@ def run_fs(target_type, regressor_type, x_df, y_df):
     X = x_df
     y = y_df[target_type]
 
-    max_features = X.shape[1]
-
     outer_spearman_scores = []
 
     selected_features_per_fold = []
 
     for fold, (train_idx, test_idx) in enumerate(outer_cv.split(X)):
-        print(f"\n===== OUTER FOLD {fold + 1} =====")
 
         X_train, X_test = X.iloc[train_idx], X.iloc[test_idx]
         y_train, y_test = y.iloc[train_idx], y.iloc[test_idx]
@@ -49,8 +46,6 @@ def run_fs(target_type, regressor_type, x_df, y_df):
         best_score = -np.inf
         best_features = None
 
-        # 🔁 перебор количества фич ТОЛЬКО на train
-        # for n in range(5, max_features):
         sfs = SequentialFeatureSelector(
             Pipeline([
                 ('scaler', StandardScaler()),
@@ -86,7 +81,6 @@ def run_fs(target_type, regressor_type, x_df, y_df):
 
         print(f"Лучшее число фич: {len(best_features)}")
 
-        # 🔒 финальная модель обучается только на train
         final_pipeline = Pipeline([
             ('scaler', StandardScaler()),
             ('regressor', regressor)
@@ -94,18 +88,12 @@ def run_fs(target_type, regressor_type, x_df, y_df):
 
         final_pipeline.fit(X_train[best_features], y_train)
 
-        # 🎯 тестируем на НОВЫХ данных (outer test fold)
         y_pred = final_pipeline.predict(X_test[best_features])
 
         spearman = spearmanr(y_test, y_pred).correlation
 
-        print(f"Spearman (test): {spearman:.4f}")
-
         outer_spearman_scores.append(spearman)
         selected_features_per_fold.append(list(best_features))
-
-    print("\n===== ИТОГ (NESTED CV) =====")
-    print(f"Spearman mean: {np.mean(outer_spearman_scores):.4f} (+/- {np.std(outer_spearman_scores) * 2:.4f})")
 
     return {
         "spearman_mean": np.mean(outer_spearman_scores),
