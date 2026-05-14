@@ -57,4 +57,7 @@ for i, label in enumerate(unique_labels):
     plt.scatter(X_tsne[mask, 0], X_tsne[mask, 1], s=70, color=colors(i),
         label=f"{label}, baseline={round(cluster_ranks.loc[i], 3)}")
 
+# plt.legend(title="Clusters", bbox_to_anchor=(1.05, 1), loc="upper left")
+plt.yticks(fontsize=20)
+plt.xticks(fontsize=20)
 plt.savefig("../results/plots/t-SNE.png")
